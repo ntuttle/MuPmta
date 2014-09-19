@@ -53,7 +53,8 @@ class CFG {
    **/
   public function defaultINI()
     {
-      return INI();
+      Req('ini.php',CONF,false);
+      return $INI;
     }
   /** 
    * SetStyles

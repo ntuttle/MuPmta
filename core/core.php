@@ -214,9 +214,8 @@ function SetDIR()
  * @param mixed $D // array or string of filenames ~( include full paths! )
  * -------------------------
  **/
-function Req($D,$P=false,$M=true)
+function Req($D,$P=false)
   {
-    $FUNC = ($R === true)?'require_once':'include';
     if(!empty($D)){
       $P = empty($P)?false:rtrim($P,'/').'/';
       $D = is_array($D)?$D:[$D];
@@ -229,7 +228,7 @@ function Req($D,$P=false,$M=true)
       if(!is_numeric($t)){return $t;}
       foreach($F as $f)
         if(file_exists($f)){
-          $FUNC($f);
+          require_once($f);
           $c++;
         }else
           $x[$f] = setCLR($f.' does not exist!','red',['bold']);
@@ -278,22 +277,11 @@ function SetErrorHandler()
   {
     set_error_handler('ErrorOut');
   }
-/** 
- * Default Server PHP INI
- * -------------------------
- **/
-function INI($D)
-  {
-    Req('ini.php',CONF,false);
-    return $INI;
-  }
 
 // Run some startup script stuff
   SetDIR();
   SetErrorHandler();
   Req('class/www.class.php',CORE);
-  Req('settings.php',CONF,false);
+  include CONF.'settings.php';
   $CFG = new CFG($_);
-  echo "<pre>";
-  print_r($CFG);
 ?>
