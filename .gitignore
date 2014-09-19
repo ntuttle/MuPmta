@@ -1,6 +1,6 @@
 # Logging Files
-logs/*
+logs/**/*.log
 
 # Script Output Files
-data/*
+data/**
 
