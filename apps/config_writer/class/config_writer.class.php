@@ -4,7 +4,7 @@ class config_writer {
   var $DB;
   var $Debug = false;
 
-  public function __construct($DB)
+  public function __construct($DB,$ARGS=false)
     {
       $this->DB   = $DB;
       $this->SetVariables();
