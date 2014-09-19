@@ -59,7 +59,7 @@ class config_writer {
         foreach ($Q as $i => $q) {
           $q['scope']        = 'pattern-list';
           $q['name']         = 'list';
-          $q['directive']    = 'reply /'.$q['pattern'].'/';
+          $q['directive']    = $q['type'].' /'.$q['pattern'].'/';
           $q['value']        = $q['action'];
           $this->RawConfig[] = $q;
         }

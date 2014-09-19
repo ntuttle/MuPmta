@@ -61,7 +61,7 @@ class www {
     {
       $HTML[] = '<td class="nb">';
       $HTML[] = '<h2>Scripts</h2>';
-      $HTML[] = $this->GetFiles('apps');
+      $HTML[] = $this->GetFiles('apps',true);
       $HTML[] = '<h2>Logs</h2>';
       $HTML[] = $this->GetFiles('logs');
       $HTML[] = '<h2>Output</h2>';
@@ -82,12 +82,14 @@ class www {
    * GetFiles
    * -------------------------
    **/
-  public function GetFiles($p)
+  public function GetFiles($p,$check=false)
     {
       $DIR = str_ireplace('\\','/',DIR.$p).'/';
       $DH = opendir($DIR);
       while($FN = readdir($DH))
         if(!in_array($FN,['.','..'])){
+          if($check)
+            CheckDirs(LOGS.'apps/'.$FN.'/');
           $x = ucwords(str_replace('_',' ',$FN));
           $li[] = '<li><a href="/'.$p.'/'.$FN.'" target="Frame">'.$x.'</a></li>';
         }

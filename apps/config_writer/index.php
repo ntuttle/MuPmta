@@ -7,4 +7,5 @@
   $CONFIG = implode(LF,$CONFIG->Conf);
   echo www::Btns(['Save','Edit','Upload']);
   echo www::Alt(htmlspecialchars($CONFIG));
+  file_put_contents(DATA.'config',$CONFIG);
 ?>

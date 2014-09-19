@@ -287,9 +287,27 @@ function Debug($C)
     $_[] = "</pre>";
     return implode(LF,$_);
   }
+/**
+ * CheckDirs
+ **/
+function CheckDirs($D=false)
+  {
+    $_D[] = LOGS;
+    $_D[] = LOGS.'pmta/';
+    $_D[] = LOGS.'pmta/smtp/';
+    $_D[] = LOGS.'pmta/acct/';
+    $_D[] = LOGS.'pmta/trans/';
+    $_D[] = LOGS.'apps/';
+    $D = empty($D)?$_D:[$D];
+    if(!empty($D))
+      foreach($D as $d)
+        if(!file_exists($d))
+          mkdir($d);
+  }
 // Run some startup script stuff
   SetDIR();
   SetErrorHandler();
+  CheckDirs();
   Req('class/www.class.php',CORE);
   include CONF.'settings.php';
   $CFG = new CFG($_);
