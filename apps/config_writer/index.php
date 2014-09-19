@@ -8,7 +8,7 @@
   echo www::Btns(['Save','Edit','Upload']);
   echo www::Alt(htmlspecialchars($CONFIG));
   file_put_contents(DATA.'config',$CONFIG);
-  $cmd = 'cp -f '.DATA.'config '.CORE.'../';
+  $cmd = 'cp -f '.DATA.'config '.DIR.'../';
   exec($cmd,$r);
   echo Debug($cmd);
   echo Debug($r);
