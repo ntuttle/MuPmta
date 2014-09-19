@@ -277,7 +277,16 @@ function SetErrorHandler()
   {
     set_error_handler('ErrorOut');
   }
-
+/**
+ * Debug
+ **/
+function Debug($C)
+  {
+    $_[] = "<pre>";
+    $_[] = print_r($C,true);
+    $_[] = "</pre>";
+    return implode(LF,$_);
+  }
 // Run some startup script stuff
   SetDIR();
   SetErrorHandler();

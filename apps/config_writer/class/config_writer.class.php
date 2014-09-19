@@ -16,9 +16,11 @@ class config_writer {
   public function SetVariables()
     {
       define('TAB',str_repeat(' ',5));
-      $this->Title();
+      $this->Title(true);
       $this->SetPMTA();
+      $this->Sources();
       $this->TargetConfigs();
+      $this->PatternList();
       $this->SMTPPatternLists();
       $this->BounceCategories();
       $this->BuildConfig();
@@ -41,10 +43,26 @@ class config_writer {
    **/
   public function TargetConfigs()
     {
-      $Q = $this->DB->GET('MUP.pmta.config__targets',['scope'=>'domain'],'*',100000);
+      $Q = $this->DB->GET('MUP.pmta.config__targets',['scope'=>'domain','ORDER'=>'name'],'*',100000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
         foreach ($Q as $i => $q)
           $this->RawConfig[] = $q;
+    }
+  /**
+   * PatternLists
+   * -------------------------
+   **/
+  public function PatternList()
+    {
+      $Q = $this->DB->GET('MUP.pmta.config__pattern_list', ['id__>=' => '0'], '*', 100000);
+      if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
+        foreach ($Q as $i => $q) {
+          $q['scope']        = 'pattern-list';
+          $q['name']         = 'list';
+          $q['directive']    = 'reply /'.$q['pattern'].'/';
+          $q['value']        = $q['action'];
+          $this->RawConfig[] = $q;
+        }
     }
   /**
    * SMTPPatternLists
@@ -53,14 +71,14 @@ class config_writer {
   public function SMTPPatternLists()
     {
       $Q = $this->DB->GET('MUP.pmta.config__smtp_pattern_list', ['id__>=' => '0'], '*', 100000);
-      $Q = isset($Q['id'])?[$Q]:$Q;
-      foreach ($Q as $i => $q) {
-        $q['scope']        = 'smtp-pattern-list';
-        $q['name']         = $q['target'];
-        $q['directive']    = 'reply /'.$q['pattern'].'/';
-        $q['value']        = $q['action'];
-        $this->RawConfig[] = $q;
-      }
+      if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
+        foreach ($Q as $i => $q) {
+          $q['scope']        = 'smtp-pattern-list';
+          $q['name']         = $q['target'];
+          $q['directive']    = 'reply /'.$q['pattern'].'/';
+          $q['value']        = $q['action'];
+          $this->RawConfig[] = $q;
+        }
     }
   /**
    * BounceCategories
@@ -69,14 +87,14 @@ class config_writer {
   public function BounceCategories()
     {
       $Q                       = $this->DB->GET('MUP.pmta.config__bounce_categories', ['id__>=' => '0'], '*', 100000);
-      if (isset($Q['id'])) {$Q = [$Q];}
-      foreach ($Q as $i => $q) {
-        $q['scope']        = 'bounce-category-patterns';
-        $q['name']         = '';
-        $q['directive']    = '/'.$q['pattern'].'/';
-        $q['value']        = $q['category'];
-        $this->RawConfig[] = $q;
-      }
+      if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
+        foreach ($Q as $i => $q) {
+          $q['scope']        = 'bounce-category-patterns';
+          $q['name']         = '';
+          $q['directive']    = '/'.$q['pattern'].'/';
+          $q['value']        = $q['category'];
+          $this->RawConfig[] = $q;
+        }
     }
   /**
    * GetRawConfig
@@ -86,7 +104,7 @@ class config_writer {
    **/
   public function GetRawConfig()
     {
-      $Q = $this->DB->GET('MUP.pmta.config', ['active' => '1'], '*', 1000000);
+      $Q = $this->DB->GET('MUP.pmta.config__global', ['active' => '1'], '*', 1000000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
         foreach ($Q as $i => $q)
           $this->RawConfig[] = $q;
@@ -137,16 +155,27 @@ class config_writer {
     {
       if ($this->GetRawConfig()){
         $this->PMTAGlobals();
-        $this->AccessList();
+        $this->GetActiveIPs();
         foreach ($this->CONFIG as $S=>$N) 
           $this->FormatScope($S,$N);
+        $this->AccessList();
         $this->TargetMacros();
-        $this->GetActiveIPs();
-        $this->DomainMacros();
         $this->RelayDomain();
-        $this->VMTA();
         $this->DKIM();
+        $this->VMTA();
       }
+      $this->Title(false);
+    }
+  /**
+   * Sources
+   * -------------------------
+   **/
+  public function Sources()
+    {
+      $Q = $this->DB->GET('MUP.pmta.config__sources',['scope'=>'source','ORDER'=>['name'=>'DESC']],'*',100000);
+      if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
+        foreach ($Q as $i => $q)
+          $this->RawConfig[] = $q;
     }
   /**
    * FormatScope
@@ -163,10 +192,11 @@ class config_writer {
     {
       $this->Title($S.'s');
       foreach ($N as $n => $D) {
+        if(isset($c)){$this->Breaker();}else{$c=1;}
+        $n = $this->ReplacePlaceholders($n);
         $this->Conf[] = TAB."<".$S.(empty($n)?'':' '.$n).">";
         $this->FormatDirectives($D,TAB);
         $this->Conf[] = TAB."</".$S.">";
-        $this->Breaker();
       }
       $this->Conf[] = '';
     }
@@ -196,14 +226,22 @@ class config_writer {
   public function ReplacePlaceholders(&$v)
     {
       $_v = trim($v);
-      if(stristr($_v,'[__hostID__]'))
-        $_v = str_ireplace('[__hostID__]',hostID,$_v);
-      if(stristr($_v,'[__hostname__]'))
-        $_v = str_ireplace('[__hostname__]',hostname,$_v);
-      if(stristr($_v,'[__ipaddr__]'))
-        $_v = str_ireplace('[__ipaddr__]',$this->PMTA['publicIP'],$_v);
-      if(stristr($_v,'[__ipaddr__]'))
-        $_v = str_ireplace('[__ipaddr__]',$this->PMTA['publicIP'],$_v);
+      if(strstr($_v,'[ID]'))
+        $_v = str_replace('[ID]',hostID,$_v);
+      if(strstr($_v,'[HOST]'))
+        $_v = str_replace('[HOST]',hostname,$_v);
+      if(strstr($_v,'[IP]'))
+        $_v = str_replace('[IP]',$this->PMTA['publicIP'],$_v);
+      if(strstr($_v,'[LOGS]'))
+        $_v = str_replace('[LOGS]',LOGS,$_v);
+      if(strstr($_v,'[APPS]'))
+        $_v = str_replace('[APPS]',APPS,$_v);
+      if(strstr($_v,'[CONF]'))
+        $_v = str_replace('[CONF]',CONF,$_v);
+      if(strstr($_v,'[DATA]'))
+        $_v = str_replace('[DATA]',DATA,$_v);
+      if(strstr($_v,'[DIR]'))
+        $_v = str_replace('[DIR]',DIR,$_v);
       return $_v;
     }
   /**
@@ -213,20 +251,23 @@ class config_writer {
   public function GetActiveIPs()
     {
       $Q = $this->DB->GET('MUP.ipconfig.global_config', ['active' => '1', 'pmta' => $this->PMTA['id']], ['ip', 'rdns'], 10000);
+
       if(!empty($Q = isset($Q['ip'])?[$Q]:$Q))
         foreach ($Q as $q) {
           $IPS[$q['ip']] = $q['ip'];
           $this->SMTP_Source_Host[$q['ip']] = $q['rdns'];
         }
       $Q = $this->DB->GET('MUP.ipconfig.target_config', ['ip__IN' => $IPS, 'active' => '1'], ['ip', 'target', 'mailing', 'content', 'rate'], 100000);
-      if(!empty($Q = isset($Q['ip'])?[$Q]:$Q))
+
+      if(!empty($Q = isset($Q['ip'])?[$Q]:$Q)){
         foreach ($Q as $q) {
           $this->DOMAINS[$q['mailing']]        = $q['mailing'];
           $this->DOMAINS[$q['content']]        = $q['content'];
           if($q['rate']>0)
             $this->VMTAS[$q['ip']][$q['target']] = $q['rate'];
         }
-      return true;
+        return true;
+      }
     }
   /**
    * ParseRawConfig
@@ -253,10 +294,12 @@ class config_writer {
   public function PMTAGlobals()
     {
       $this->Title(strtoupper($this->PMTA['name']).' - PMTA Configuration');
-      foreach ($this->CONFIG['GLOBAL'] as $N => $D)
-        $this->FormatDirectives($D);
+      if(!empty($this->CONFIG['GLOBAL'])){
+        foreach ($this->CONFIG['GLOBAL'] as $N => $D)
+          $this->FormatDirectives($D);
+        unset($this->CONFIG['GLOBAL']);
+      }
       $this->Conf[] = '';
-      unset($this->CONFIG['GLOBAL']);
       return true;
     }
   /**
@@ -266,14 +309,21 @@ class config_writer {
   public function Title($TITLE=false)
     {
       if(!$TITLE){
-        $TITLE = 'MediaUniversal - PowerMTA CONFIGURATION ';
+        $TITLE = ' END - PowerMTA config';
+        $l = ((100-strlen($TITLE))/2);
+        $this->Conf[] = '#'.str_repeat('=', 102).'#';
+        $this->Conf[] = '# '.str_repeat(' ',$l).strtoupper($TITLE).str_repeat(' ',$l).' #';
+        $this->Conf[] = '#'.str_repeat('#', 102).'#';
+        return;
+      }elseif($TITLE===true){
+        $TITLE = 'Media Universal - PowerMTA config';
         $l = ((100-strlen($TITLE))/2);
         $this->Conf[] = '#'.str_repeat('#', 102).'#';
-        $this->Conf[] = '# '.str_repeat(' ',$l).$TITLE.str_repeat(' ',$l).' #';
+        $this->Conf[] = '# '.str_repeat(' ',$l).strtoupper($TITLE).str_repeat(' ',$l).' #';
         return;
       }
       $this->Conf[] = '#'.str_repeat('=', 102).'#';
-      $this->Conf[] = '# '.$TITLE.str_repeat(' ',(100-strlen($TITLE))).' #';
+      $this->Conf[] = '# '.strtoupper($TITLE).str_repeat(' ',(100-strlen($TITLE))).' #';
       $this->Conf[] = '#'.str_repeat('-', 102).'#';
     }
   /**
@@ -314,10 +364,10 @@ class config_writer {
       $this->Title('Target Domain Macros');
       $Q = $this->DB->GET('MUP.domains.targets', ['active' => '1'], '*', 100000);
       foreach ($Q as $q)
-      $TARGETS[$q['target']][] = $q['domain'];
+        $TARGETS[$q['target']][] = $q['domain'];
       foreach ($TARGETS as $target => $domains)
-      $this->Conf[] = TAB.'domain-macro'.str_repeat(' ', 8).$target.str_repeat(' ', (15-strlen($target))).implode(', ', $domains);
-      $this->Conf[] = '';
+        $this->Conf[] = TAB.'domain-macro'.str_repeat(' ', 8).$target.str_repeat(' ', (15-strlen($target))).implode(', ', $domains);
+      $this->DomainMacros();
     }
   /**
    * DomainMacros
@@ -325,13 +375,11 @@ class config_writer {
    **/
   public function DomainMacros()
     {
-      $this->Title('Mailing & Content Domain Macros');
       if(!empty($this->DOMAINS)){
-        $this->Conf[] = TAB.'domain-macro'.str_repeat(' ', 8).'AllDomains'.str_repeat(' ', 5).implode(', ', $this->DOMAINS);
-        $this->Conf[] = '';
-        $this->Conf[] = TAB.'<domain $AllDomains>';
+        $this->Conf[] = TAB.'domain-macro'.str_repeat(' ', 8).'domains'.str_repeat(' ', 5).implode(', ', $this->DOMAINS);
+        $this->Conf[] = TAB.'<domain $domains>';
         $this->Conf[] = TAB.TAB.'type'.str_repeat(' ', 11).'pipe';
-        $this->Conf[] = TAB.TAB.'command'.str_repeat(' ', 8).'"/usr/bin/php /etc/pmta/scripts/IncomingEmails.php"';
+        $this->Conf[] = TAB.TAB.'command'.str_repeat(' ', 8).'"/usr/bin/php '.APPS.'incoming_emails/run.php"';
         $this->Conf[] = TAB.'</domain>';
       }
       $this->Conf[] = '';
