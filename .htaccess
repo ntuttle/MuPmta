@@ -1,0 +1,12 @@
+AddType text/css .less
+AddType application/octet-stream .pem
+AddDefaultCharset utf-8
+AddCharset utf-8 .html .less .php .css .js .xml .json
+
+<IfModule mod_rewrite.c>
+	RewriteCond %{REQUEST_FILENAME} -l 
+	RewriteEngine On
+	RewriteBase /
+	RewriteRule .* - [L]
+	RewriteRule ^([^\/]+)/?([^\/]{0,})/?$	index.php?script=$1&args=$2 [L]
+	</IfModule>
