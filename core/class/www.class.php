@@ -246,7 +246,7 @@ class www {
         ];
       $S['div.alt']       = [
         'background'        => 'white',
-        'color'             => 'black',
+        'color'             => 'grey',
         'font-size'         => '12px',
         'text-shadow'       => 'none',
         'margin'            => '0px -25px',

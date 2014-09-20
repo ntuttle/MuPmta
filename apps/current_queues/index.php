@@ -5,5 +5,5 @@ Req('class/current_queues.class.php',__DIR__);
 $CQ = new CurrentQueues($CFG->DB);
 
 echo www::ScriptHead('Current Queues');
-echo www::Alt(Debug($CQ));
+echo www::Alt(Debug($CQ->Queues));
 ?>
