@@ -34,7 +34,7 @@ class CurrentQueues {
     {
       if(!empty($this->Queues)){
         $json = json_encode($this->Queues,JSON_PRETTY_PRINT);
-        file_put_contents(DATA.'current_queues.json',$json);
+        file_put_contents(DATA.'current_queues',$json);
       }
     }
   /**
