@@ -332,8 +332,15 @@ class www {
   public function Frame()
     {
       $HTML[] = '<td width="100%">';
-      $URL = 'http://'.$this->CFG->hostname.'.'.$this->CFG->domain.':'.$this->CFG->mtaPort.'/status';
-      $HTML[] = '<iframe class="f" name="Frame" id="Frame" src="'.$URL.'"></iframe>';
+      $URL = 'http://'.$this->CFG->hostname.'.'.$this->CFG->domain.':'.$this->CFG->mtaPort;
+      $WEB = file_get_contents($URL.'/status');
+      $WEB = str_ireplace('href="css.css"','href="'.$URL.'/css.css"',$WEB);
+      $WEB = str_ireplace('src="logo.gif"','src="'.$URL.'/logo.gif"',$WEB);
+      $WEB = str_ireplace("\n",'',$WEB);
+      $WEB = str_ireplace("   ",'',$WEB);
+      $WEB = www::ScriptHead('PowerMTA Status').'<div class="alt">'.$WEB.'</div>';
+      file_put_contents( DATA.'status',$WEB);
+      $HTML[] = '<iframe class="f" name="Frame" id="Frame" src="/data/status"></iframe>';
       $HTML[] = '</td>';
       $this->HTML($HTML);
     }

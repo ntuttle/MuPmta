@@ -52,6 +52,18 @@ class CurrentQueues {
           $this->Queues[$x[1]][$x[2]][$x[3]][$x[4]] = $x[5];
         }
       }
+      $this->FormatQueues();
+    }
+  /**
+   * FormatQueues
+   * -------------------------
+   **/
+  public function FormatQueues()
+    {
+      foreach($this->Queues as $i=>$Queue){
+        $domain = $Queue['name'];
+
+      }
     }
   /**
    * SetDB
