@@ -253,6 +253,10 @@ class www {
         'padding'           => '10px 25px',
         'box-shadow'        => 'inset 0px 0px 5px black'
         ];
+      $S['div.alt *']     = [
+        'color'             => 'grey',
+        'text-shadow'       => 'none'
+        ];
       foreach($S as $e=>$s)
         {
           $C = [$e.' {'];
