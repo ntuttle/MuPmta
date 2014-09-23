@@ -17,6 +17,11 @@
 
 # Database Connections
 #---------------------------------------------------
+  $H['LOGS']    = [# IncomingEmail,PMTAlogs,metadata
+                      'public'  =>'207.158.26.6',
+                      'private' =>'192.168.15.130',
+                      'port'    => 3307
+                      ];
   $H['MUP']     = [# Offers,Jobs,Presets,Domains,IPs
                       'public'  =>'207.158.26.15',
                       'private' =>'192.168.15.200',
@@ -32,11 +37,7 @@
                       'private' => false,
                       'port'    => 3306
                       ];
-  $H['LOGS']    = [# IncomingEmail,PMTAlogs,metadata
-                      'public'  =>'207.158.26.6',
-                      'private' =>'192.168.15.130',
-                      'port'    => 3307
-                      ];
+  
 
 # COMPILE AND LAUNCH
 # DO NOT EDIT BELOW HERE

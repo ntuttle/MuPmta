@@ -13,20 +13,23 @@ class DBC {
 	var $rID = 0;		// ROW ID
 	var $lID = 0;		// LAST ID
 	var $Key = ['id'=>false]; // Result Row Identifier 'name'=> true|false
-	public function __construct($N, $H = 'localhost', $U = 'root', $P = false)
+	public function __construct($N, $H = 'localhost', $U = 'root', $P = false, $p = true)
 		{
 			if (!$P) 
 				$P = PASS;
-			$this->C($N, $H, $U, $P);
+			$this->C($N, $H, $U, $P, $p);
 			$this->N = $N;
 		}
 	/**
 	 * C
 	 * -------------------------
 	 **/
-	public function C($N, $H, $U, $P)
+	public function C($N, $H, $U, $P, $p=false)
 		{
-			$S = mysql_connect($H, $U, $P, true, MYSQL_CLIENT_COMPRESS) or die('No Database Connection! '.$H.'|'.$U.'|'.$P.'|'.mysql_error());
+			if($p)
+				$S = mysql_pconnect($H, $U, $P, MYSQL_CLIENT_COMPRESS) or die('No Database Connection! '.$H.'|'.$U.'|'.$P.'|'.mysql_error());
+			else
+				$S = mysql_connect($H, $U, $P, false, MYSQL_CLIENT_COMPRESS) or die('No Database Connection! '.$H.'|'.$U.'|'.$P.'|'.mysql_error());
 			if ($S) 
 				$this->S[$N] = $S;
 			else 
