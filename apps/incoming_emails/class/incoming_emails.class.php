@@ -26,7 +26,6 @@ class incoming_emails {
       file_put_contents(LOGS.'apps/incoming_emails/last.msg',$EMAIL);
       $this->EMAIL = $EMAIL;
       $this->ParseEmail();
-      $this->DB_Insert();
     }
   /**
    * ParseEmail
@@ -162,7 +161,7 @@ class incoming_emails {
           }
         }
       }
-      $_H = trim(implode('',$_H));
+      $_H = trim(implode(LF,$_H));
       if($return===true)
         $R = [$T,$Enc,$C,$B,$_H];
       else
@@ -292,7 +291,6 @@ class incoming_emails {
       $F = ['date','headers','body','server'];
       $V = [$this->Date,$this->RawHeaders,$this->RawBody,hostID];
       $this->DB->PUT('LOGS.emails.archive',$F,[$V],'DELAYED');
-      echo Debug($this->DB);
     }
 }
 
