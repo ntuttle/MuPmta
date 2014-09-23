@@ -259,7 +259,6 @@ function ErrorOut($errno, $errstr, $errfile, $errline)
         break;
     }
     echo "<pre>{$E}</pre>";
-    exit();
     return true;
   }
 /**

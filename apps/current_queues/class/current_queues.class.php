@@ -92,10 +92,11 @@ class current_queues {
         $_['mode'] = $Queue['mode'];
         $_['retry'] = $RETRY;
         $ERROR = [];
-        foreach($Queue['event'] as $E){
-          $_['errors'][] = [$E['time']=>$E['text']];
-          $ERROR[] = $this->CheckError($E['text']);
-        }
+        if(is_array($Queue['event']))
+          foreach($Queue['event'] as $E){
+            $_['errors'][] = [$E['time']=>$E['text']];
+            $ERROR[] = $this->CheckError($E['text']);
+          }
         $this->_Queues[$IP][$TARGET] = $_;
         $this->DB_Update[] = ['IP'=>$IP,'TARGET'=>$TARGET,'RCPT'=>$RCPT,'STREAK'=>0,'RETRY'=>$RETRY,'ERROR'=>implode(LF,$ERROR),'STATUS'=>$STS];
       }
