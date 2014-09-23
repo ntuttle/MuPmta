@@ -9,7 +9,7 @@ class logger {
 
   public function __construct($CFG)
     {
-      $this->DB = $CFG->DB
+      $this->DB = $CFG->DB;
     }
 
   public function ReadLog($DATA)
