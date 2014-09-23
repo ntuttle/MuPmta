@@ -35,6 +35,8 @@ class incoming_emails {
   public function ParseEmail()
     {
       list($headers,$body) = explode("\n\n",str_ireplace("\r",'',$this->EMAIL),2);
+      $this->RawHeaders = $headers;
+      $this->RawBody = $body;
       $this->Headers = $this->ParseHeaders($headers);
       $this->ParseBody($body,$this->boundary,true);
     }
@@ -288,7 +290,7 @@ class incoming_emails {
   public function DB_Insert()
     {
       $F = ['date','headers','body','server'];
-      $V = [$this->Date,json_encode($this->Headers,JSON_PRETTY_PRINT),json_encode($this->Body,JSON_PRETTY_PRINT),hostID];
+      $V = [$this->Date,$this->RawHeaders,$this->RawBody,hostID];
       $this->DB->PUT('LOGS.emails.archive',$F,[$V],'DELAYED');
       echo Debug($this->DB);
     }
