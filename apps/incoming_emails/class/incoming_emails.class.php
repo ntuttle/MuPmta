@@ -288,8 +288,9 @@ class incoming_emails {
   public function DB_Insert()
     {
       $F = ['date','headers','body','server'];
-      $V = [$this->Date,$this->Headers,$this->Body,hostID];
+      $V = [$this->Date,json_encode($this->Headers,JSON_PRETTY_PRINT),json_encode($this->Body,JSON_PRETTY_PRINT),hostID];
       $this->DB->PUT('LOGS.emails.archive',$F,[$V],'DELAYED');
+      echo Debug($this->DB);
     }
 }
 
