@@ -18,8 +18,13 @@ class job_writer {
           $IDs[] = [$i];
           $this->Lineup[$i] = $q;
         }
+        $this->ClaimLineup($IDs);
         $this->BuildJobs();
       }
+    }
+  public function ClaimLineup($IDs)
+    {
+      $this->DB->SET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'BUILDING'],['id'=>$IDs]);
     }
   public function BuildJobs()
     {
