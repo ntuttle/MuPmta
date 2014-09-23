@@ -199,8 +199,7 @@ class incoming_emails {
             if(is_array($v)){$v = implode(LF,$v);}
             $_HEADERS[] = ['header'=>$k,'value'=>htmlspecialchars($v)];
           }
-      $T = new TBL();
-      return $T->Make($_HEADERS).'<br><br>';
+      return $_HEADERS;
     }
   /**
    * ShowParts
@@ -281,14 +280,6 @@ class incoming_emails {
           $this->partCount++;
         }
       return $_B;
-    }
-  /**
-   * RunExtraScripts
-   * -------------------------
-   **/
-  public function RunExtraScripts()
-    {
-
     }
   /**
    * DB_Insert
