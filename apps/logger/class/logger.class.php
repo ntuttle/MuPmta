@@ -1,5 +1,4 @@
 <?php
-
 class logger {
   
   var $i = 0;
@@ -73,5 +72,4 @@ class logger {
       $this->V[] = [$TYPE,$TIME,$SENT,$EMAIL,$STATUS,$ERROR,$BOUNCE,$JOBID,$DOMAIN,$IP,ip2long($IP),hostID];
     }
 }
-
 ?>
