@@ -125,7 +125,7 @@ class CFG {
           if(empty($DB))
             $DB = $this->NewDB($H,$IP,$U,$P);
           if(empty($DB->S[$H]))
-            $DB->C($H,$IP,$U,$P);
+            $DB->C($H,$IP,$U,$P,true);
           if(!defined($H))
             define($H,$IP);
         }
