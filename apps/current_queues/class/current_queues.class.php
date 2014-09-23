@@ -1,7 +1,7 @@
 <?php
 class current_queues {
 
-  var $Debug = true;
+  var $Debug = false;
   var $DB;
   var $cmd = '/usr/sbin/pmta --dom show topqueues --maxitems=100000 --errors';
   var $regex = '/queue\[([0-9]+)\]\.([a-zA-Z]+)[\[]?([0-9]{0,})[\]]?[\.]?([a-z]{0,})\=\"(.*)\"/';
