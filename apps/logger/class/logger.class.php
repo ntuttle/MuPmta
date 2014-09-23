@@ -3,7 +3,7 @@
 class logger {
   
   var $i = 0;
-  var $batchSize = 10;
+  var $batchSize = 1;
   var $DATA;
   var $DB;
 
@@ -11,7 +11,10 @@ class logger {
     {
       $this->DB = $CFG->DB;
     }
-
+  /**
+   * ReadLog
+   * -------------------------
+   **/
   public function ReadLog($DATA)
     {
       if(is_array($DATA)){
@@ -22,14 +25,23 @@ class logger {
       }
       file_put_contents(LOGS.'apps/logger/data.log',implode(',',$DATA).LF,FILE_APPEND);
     }
+  /**
+   * DB_Insert
+   * -------------------------
+   **/
   public function DB_Insert()
     {
       $F = ['type','time','send_date','email','status','error','bounce','jobid','domain','ip','longip','server'];
       if(!empty($this->V)){
         $this->DB->PUT('LOGS.logs.pmta_'.strtoupper(hostname),$F,$V,'DELAYED');
         $this->V = [];
+        $this->i = 0;
       }
     }
+  /**
+   * ParseLog
+   * -------------------------
+   **/
   public function ParseLog($d)
     {
       $TYPE = $d[0];
