@@ -277,8 +277,8 @@ function Debug($C,$T=false)
     $_[] = "<pre>";
     $_[] = "<b>{$T}</b><hr >";
     $C = print_r($C,true);
-    //$_[] = htmlspecialchars($C);
-    $_[] = $C;
+    $_[] = htmlspecialchars($C);
+    //$_[] = $C;
     $_[] = "</pre>";
     return implode(LF,$_);
   }
