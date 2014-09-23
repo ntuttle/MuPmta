@@ -289,7 +289,7 @@ class incoming_emails {
   public function DB_Insert()
     {
       $F = ['date','headers','body','server'];
-      $V = [$this->Date,$this->RawHeaders,$this->RawBody,hostID];
+      $V = [$this->Date,$this->RawHeaders,$this->RawBody,hostname];
       $this->DB->PUT('LOGS.emails.archive',$F,[$V],'DELAYED');
     }
 }
