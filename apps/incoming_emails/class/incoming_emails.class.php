@@ -26,8 +26,7 @@ class incoming_emails {
       file_put_contents(LOGS.'apps/incoming_emails/last.msg',$EMAIL);
       $this->EMAIL = $EMAIL;
       $this->ParseEmail();
-      //$this->RunExtraScripts();
-      //$this->DB_Insert();
+      $this->DB_Insert();
     }
   /**
    * ParseEmail
@@ -161,7 +160,7 @@ class incoming_emails {
           }
         }
       }
-      $_H = trim(implode(LF,$_H));
+      $_H = trim(implode('',$_H));
       if($return===true)
         $R = [$T,$Enc,$C,$B,$_H];
       else
@@ -189,8 +188,23 @@ class incoming_emails {
       return $R;
     }
   /**
-   * 
-   * 
+   * ShowHeaders
+   * -------------------------
+   **/
+  public function ShowHeaders()
+    {
+      if(!empty($this->Headers))
+        foreach($this->Headers as $i=>$header)
+          foreach($header as $k=>$v){
+            if(is_array($v)){$v = implode(LF,$v);}
+            $_HEADERS[] = ['header'=>$k,'value'=>htmlspecialchars($v)];
+          }
+      $T = new TBL();
+      return $T->Make($_HEADERS).'<br><br>';
+    }
+  /**
+   * ShowParts
+   * -------------------------
    **/
   public function ShowParts()
     {
@@ -198,11 +212,11 @@ class incoming_emails {
         if(is_array($b['parts']))
           foreach($b['parts'] as $c=>$_b){
             $part = empty($_b['decoded']) ? $_b['parts'] : $_b['decoded'] ;
-            $HTML[] = Debug($part,$c.' ~ '.$_b['ContentType'].' ~ '.$_b['ContentTransferEncoding']);
+            $HTML[] = Debug($part,'Part#'.$c.' ~ '.$_b['ContentType'].' ~ '.$_b['ContentTransferEncoding']);
           }
         else{
           $part = empty($b['decoded']) ? $b['parts'] : $b['decoded'] ;
-          $HTML[] = Debug($part,$i.' ~ '.$b['ContentType'].' ~ '.$b['ContentTransferEncoding']);
+          $HTML[] = Debug($part,'Part#'.$i.' ~ '.$b['ContentType'].' ~ '.$b['ContentTransferEncoding']);
         }
       }
       return implode(LF,$HTML);
