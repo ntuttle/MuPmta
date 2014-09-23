@@ -1,6 +1,5 @@
 <?php
 class incoming_emails {
-  
   var $To;
   var $From;
   var $Subject;
@@ -10,13 +9,10 @@ class incoming_emails {
   var $boundary;
   var $charset;
   var $partCount = 0;
-
   var $Headers;
   var $Body;
-
   var $EMAIL;
   var $DB;
-
   public function __construct($CFG)
     {
       $this->DB = $CFG->DB;
@@ -27,6 +23,7 @@ class incoming_emails {
    **/
   public function ReadEmail($EMAIL)
     {
+      file_put_contents(LOGS.'apps/incoming_emails/last.msg',$EMAIL);
       $this->EMAIL = $EMAIL;
       $this->ParseEmail();
       //$this->RunExtraScripts();
@@ -40,7 +37,7 @@ class incoming_emails {
     {
       list($headers,$body) = explode("\n\n",str_ireplace("\r",'',$this->EMAIL),2);
       $this->Headers = $this->ParseHeaders($headers);
-      $this->ParseBody($body,$this->boundary);
+      $this->ParseBody($body,$this->boundary,true);
     }
   /**
    * ParseHeaders
@@ -67,11 +64,10 @@ class incoming_emails {
       $this->Subject = $this->GetHeader($_H,'Subject');
       $this->Date    = $this->GetHeader($_H,'Date');
       $C = $this->ParseContentHeaders($_H,false);
-      foreach($C as $k=>$v) 
-        if(!empty($v)){
-          $k = str_ireplace('-','',$k);
-          $this->$k = $v;
-        }
+      $this->ContentType = $C[0];
+      $this->ContentTransferEncoding = $C[1];
+      $this->charset = $C[2];
+      $this->boundary = $C[3];
       return @$_H;
     }
   /**
@@ -98,7 +94,7 @@ class incoming_emails {
    **/
   public function ParseContentHeaders($H,$return=true)
     {
-      $T = $B = $C = $E = $D = false;
+      $T = $B = $C = $Enc = $D = false;
       $t = 'Content\-Type[ ]{0,1}:[ \r\n\t]{0,5}([^; ]+)[; \t\r\n]{0,5}';
       $c = 'charset\=["\']{0,1}([^"\' \r\n]+)["\']{0,1}[; \t\r\n]{0,5}';
       $b = 'boundary\=["\']{0,1}([^"\' \r\n]+)["\']{0,1}';
@@ -120,11 +116,12 @@ class incoming_emails {
               $v = implode("\r\n\t",$v);
             $_H[$i] = $h.': '.$v;
           }
-      $cnt = empty($return) ? count($_H) : 5;
+      $cnt = empty($return) ? count($_H) : 10;
       foreach($_H as $i=>$h){
         if($i>$cnt){break;}
-        if(in_array(trim($h),['--'])){
+        if(in_array(trim($h),['--',''])){
           unset($_H[$i]);
+          break;
         }else{
           if(empty($T)){
             if(preg_match($R1,$h,$x)){
@@ -144,20 +141,20 @@ class incoming_emails {
               unset($_H[$i]);
             }
           }
-          if(empty($E)){
-            if(preg_match($R5,$h,$x)){
-              list($_,$E) = $x;
+          if(preg_match($R5,$h,$x)){
+            if(empty($Enc)){
+              list($_,$Enc) = $x;
               unset($_H[$i]);
             }
           }
-          if(empty($C)){
-            if(preg_match($R6,$h,$x)){
+          if(preg_match($R6,$h,$x)){
+            if(empty($C)){
               list($_,$C) = $x;
               unset($_H[$i]);
             }
           }
-          if(empty($B)){
-            if(preg_match($R7,$h,$x)){
+          if(preg_match($R7,$h,$x)){
+            if(empty($B)){
               list($_,$B) = $x;
               unset($_H[$i]);
             }
@@ -166,41 +163,109 @@ class incoming_emails {
       }
       $_H = trim(implode(LF,$_H));
       if($return===true)
-        $R = [$T,$E,$C,$B,$_H];
+        $R = [$T,$Enc,$C,$B,$_H];
       else
-        $R = [$T,$E,$C,$B];
-      if(stristr($E,'quoted-printable'))
+        $R = [$T,$Enc,$C,$B];
+      if(stristr($Enc,'quoted-printable'))
         $R['decoded'] = quoted_printable_decode($_H);
-      elseif(stristr($E,'base64'))
-        $R['decoded'] = base64_decode($_H);
+      elseif(stristr($Enc,'base64')){
+        $_H = LineBreak($_H);
+        foreach($_H as $h)
+          if(!empty($h)){
+            if(preg_match('/^Content\-ID[ ]?:[ <]{0,}([^>]+)[ >]{0,}/',$h,$x))
+              $rid = $x[1];
+            elseif(!preg_match('/^Content.*/',$h,$x))
+              if(!preg_match('/^  .*/',$h,$x))
+                $__H[] = $h;
+          }
+        if(!empty($__H))
+          if(stristr($T,'image')){
+            $img = 'data:image/jpg;base64,'.implode('',$__H).'';
+            $this->Replace['cid:'.$rid] = $img;
+            $R['decoded'] = $img;
+            return false;
+          }
+      }
       return $R;
+    }
+  /**
+   * 
+   * 
+   **/
+  public function ShowParts()
+    {
+      foreach($this->Body as $i=>$b){
+        if(is_array($b['parts']))
+          foreach($b['parts'] as $c=>$_b){
+            $part = empty($_b['decoded']) ? $_b['parts'] : $_b['decoded'] ;
+            $HTML[] = Debug($part,$c.' ~ '.$_b['ContentType'].' ~ '.$_b['ContentTransferEncoding']);
+          }
+        else{
+          $part = empty($b['decoded']) ? $b['parts'] : $b['decoded'] ;
+          $HTML[] = Debug($part,$i.' ~ '.$b['ContentType'].' ~ '.$b['ContentTransferEncoding']);
+        }
+      }
+      return implode(LF,$HTML);
+    }
+  /**
+   * MakeReplace
+   * -------------------------
+   **/
+  public function MakeReplace($C)
+    {
+      if(!empty($this->Replace))
+        foreach($this->Replace as $k=>$v)
+          $C = str_ireplace($k,$v,$C);
+      return $C;
     }
   /**
    * ParseBody
    * -------------------------
    **/
-  public function ParseBody($B,$b=false,$r=false)
+  public function ParseBody($B,$b=false,$set=false)
     {
       if(!empty($b))
         $B = explode($b,$B);
       if(!is_array($B))
         $B = [$B];
+      $_B = [];
       foreach($B as $i=>$_b){
-        $this->partCount++;
+        if(is_array($_b))
+          foreach($_b as &$__b)
+            $__b = trim($__b," \r\n\t-");
+        else
+          $_b = trim($_b," \r\n\t-");
         $C = $this->ParseContentHeaders($_b);
         list($ContentType,$ContentTransferEncoding,$charset,$boundary,$parts) = $C;
         if($boundary)
-          $parts = $this->ParseBody($parts,$boundary,true);
+          $parts = $this->ParseBody($parts,$boundary);
         if(!empty($parts)){
-          $_B[] = $parts;
-          $this->Body[$this->partCount] = [
+          $_B[$i] = [
             'ContentType' => $ContentType,
             'ContentTransferEncoding' => $ContentTransferEncoding,
             'charset' => $charset,
             'parts' => $parts
             ];
+          if(!empty($C['decoded']))
+            $_B[$i]['decoded'] = $C['decoded'];
         }
       }
+      if($set)
+        foreach($_B as $b){
+          if(is_array($b['parts']))
+            foreach($b['parts'] as &$p){
+              $p['parts'] = $this->MakeReplace(@$p['parts']);
+              $p['decoded'] = $this->MakeReplace(@$p['decoded']);
+            }
+          $this->Body[$this->partCount] = [
+            'ContentType' => $b['ContentType'],
+            'ContentTransferEncoding' => $b['ContentTransferEncoding'],
+            'charset' => $b['charset'],
+            'parts' => $this->MakeReplace($b['parts']),
+            'decoded' => $this->MakeReplace(@$b['decoded'])
+            ];
+          $this->partCount++;
+        }
       return $_B;
     }
   /**
