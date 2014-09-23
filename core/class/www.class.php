@@ -115,6 +115,7 @@ class www {
    **/
   public static function CSS()
     {
+      $S = [];     // CSS Styles
       $S['*']             = [
         'font-family'     => 'courier',
         'color'           => 'white',
@@ -254,15 +255,43 @@ class www {
         'box-shadow'        => 'inset 0px 0px 5px black'
         ];
       $S['div.alt *']     = [
-        'color'             => 'grey',
-        'text-shadow'       => 'none'
+        'color'           => 'grey',
+        'text-shadow'     => 'none'
         ];
-      foreach($S as $e=>$s)
-        {
-          $C = [$e.' {'];
-          foreach($s as $k=>$v){$C[] = "\t".$k.':'.$v.';';}
-          $C[] = '}';
-          $_CSS[] = implode(LF,$C);
+      $S['div.alt pre']   = [
+        'border'          => '1px dashed grey',
+        'padding'         => '5px 10px',
+        'background'      => '#FFF3D1'
+        ];
+      $S['div.alt hr']    = [
+        'background'      => 'grey',
+        'height'          => '1px'
+        ];
+      $S['.tbl tr td']    = [
+        'padding'           => '2px 5px'
+        ];
+      $S['.tbl tr:hover td'] = [
+        'background'      => '#cccccc',
+        'color'           => 'black',
+        'cursor'          => 'pointer'
+        ];
+      $S['.tbl']          = [
+        'box-shadow'      => '0px 0px 5px black',
+        'background'      => '#ececec',
+        'width'           => '100%'
+        ];
+      $S['tr.header th']  = [
+        'background'      => 'black',
+        'color'           => 'white',
+        'padding'         => '3px',
+        'text-align'      => 'center'
+        ];
+      foreach($S as $e=>$s){
+        $C = [$e.'{'];
+        foreach($s as $k=>$v)
+          $C[] = "  ".$k.':'.$v.';';
+        $C[] = '}';
+        $_CSS[] = implode(LF,$C);
         }
       $_CSS = implode(LF,$_CSS);
       return '<style type="text/css">'.$_CSS.'</style>';
@@ -333,8 +362,8 @@ class www {
     {
       $HTML[] = '<td width="100%">';
       $URL = 'http://'.$this->CFG->hostname.'.'.$this->CFG->domain.':'.$this->CFG->mtaPort;
-      $WEB = file_get_contents($URL.'/status');
-      $WEB = str_ireplace('href="css.css"','href="'.$URL.'/css.css"',$WEB);
+      $WEB = file_get_contents($URL);
+      $WEB = str_ireplace('href="','href="'.$URL.'/',$WEB);
       $WEB = str_ireplace('src="logo.gif"','src="'.$URL.'/logo.gif"',$WEB);
       $WEB = str_ireplace("\n",'',$WEB);
       $WEB = str_ireplace("   ",'',$WEB);

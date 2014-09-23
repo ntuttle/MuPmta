@@ -1,12 +1,5 @@
 <?
 /** 
- * More Functions
- * -------------------------
- * Useful Static functions
- * -------------------------
- **/
-
-/** 
  * assign
  * -------------------------
  * return the value of a variable, while 
@@ -280,10 +273,12 @@ function SetErrorHandler()
 /**
  * Debug
  **/
-function Debug($C)
+function Debug($C,$T=false)
   {
     $_[] = "<pre>";
-    $_[] = print_r($C,true);
+    $_[] = "<b>Debug -> {$T}</b><hr >";
+    $C = print_r($C,true);
+    $_[] = htmlspecialchars($C);
     $_[] = "</pre>";
     return implode(LF,$_);
   }
@@ -303,6 +298,16 @@ function CheckDirs($D=false)
       foreach($D as $d)
         if(!file_exists($d))
           mkdir($d);
+  }
+/**
+ * LineBreak
+ * -------------------------
+ **/
+function LineBreak($string)
+  {
+    if(!is_string($string)) return $string;
+    $string = explode("\n",str_ireplace("\r",'',$string));
+    return $string;
   }
 // Run some startup script stuff
   SetDIR();

@@ -53,7 +53,7 @@ class CFG {
    **/
   public function defaultINI()
     {
-      Req('ini.php',CONF,false);
+      include CONF.'ini.php';
       return $INI;
     }
   /** 
@@ -122,11 +122,12 @@ class CFG {
         foreach($HOSTS as $H=>$INFO){
           $PORT = empty($INFO['port'])?'':':'.$INFO['port'];
           $IP = $INFO[$i].$PORT;
-          if(!is_object($DB))
+          if(empty($DB))
             $DB = $this->NewDB($H,$IP,$U,$P);
           if(empty($DB->S[$H]))
             $DB->C($H,$IP,$U,$P);
-          define($H,$IP);
+          if(!defined($H))
+            define($H,$IP);
         }
         if(is_object($DB))
           return $this->DB = $DB;
@@ -181,7 +182,7 @@ class CFG {
    **/
   public function Dependancies()
     {
-      foreach(['db','form','sms'] as $d)
+      foreach(['db','form','sms','table'] as $d)
         $D[] = $d.'.class.php';
       $_ = Req($D,DIR.'core/class/');
       if(!is_numeric($_) || empty($_)){
