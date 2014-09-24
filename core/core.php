@@ -83,7 +83,7 @@ function Write($message = false)
  **/
 function PASS($message = false)
   {
-    return setClr('OK!','green').$message.setBR();
+    return setClr('  OK!  ','green').' ~ '.$message.setBR();
   }
 /**
  * FAIL
@@ -91,7 +91,7 @@ function PASS($message = false)
  **/
 function FAIL($message = false)
   {
-    return setClr('ERROR','red',['bold','intense']).$message.setBR();
+    return setClr('ERROR! ','red',['bold','intense']).' ~ '.$message.setBR();
   }
 /**
  * setBR

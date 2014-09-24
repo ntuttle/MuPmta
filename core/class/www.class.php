@@ -286,6 +286,9 @@ class www {
         'padding'         => '3px',
         'text-align'      => 'center'
         ];
+      $S['span > b']      = [
+        'color'           => 'inherit'
+        ];
       foreach($S as $e=>$s){
         $C = [$e.'{'];
         foreach($s as $k=>$v)

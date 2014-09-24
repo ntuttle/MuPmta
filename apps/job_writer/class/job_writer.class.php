@@ -3,6 +3,7 @@ class job_writer {
   
   var $DB;
   var $ID;
+  var $ALERTS;
 
   public function __construct($CFG)
     {
@@ -19,7 +20,7 @@ class job_writer {
       if(!empty($Q)){
         $Q = isset($Q['id'])?[$Q['id']=>$Q]:$Q;
         foreach($Q as $i=>$q){
-          $IDs[] = [$i];
+          $IDs[$i] = $i;
           $this->Lineup[$i] = $q;
         }
         $this->ClaimLineup($IDs);
@@ -32,7 +33,10 @@ class job_writer {
    **/
   public function ClaimLineup($IDs)
     {
-      $this->DB->SET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'BUILDING'],['id'=>$IDs]);
+      $count = count($IDs);
+      $this->DB->SET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'BUILDING'],['id'=>$IDs],$count);
+      if($this->DB->aR < $count)
+        $this->ALERTS[] = FAIL('Problem with claiming lineup ids!'.Debug($this->DB));
     }
   /**
    * BuildJobs
