@@ -9,12 +9,10 @@
   $_['domain']  = 'mu-portal.com';
   $_['wwwPort'] =  2186;
   $_['mtaPort'] =  8080;
-
 # Php.ini - more in /core/conf/ini.php
 #---------------------------------------------------
   $I['display_errors']  = 1;
   $I['date.timezone']   = 'America/Los_Angeles';
-
 # Database Connections
 #---------------------------------------------------
   $H['LOGS']    = [# IncomingEmail,PMTAlogs,metadata
@@ -37,9 +35,6 @@
                       'private' => false,
                       'port'    => 3306
                       ];
-  
-
-# COMPILE AND LAUNCH
 # DO NOT EDIT BELOW HERE
 #---------------------------------------------------
   $_['hosts'] = $H;
