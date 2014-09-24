@@ -22,6 +22,7 @@ class job_writer {
       $Q = $this->DB->GET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'PENDING','send_date__<='=>'NOW()','active'=>1],['id','listID','json_params'],$this->Limit);
       if(!empty($Q)){
         $Q = isset($Q['id'])?[$Q['id']=>$Q]:$Q;
+        $this->ALERTS[] = PASS('Lineup: '.count($Q).' claimed');
         foreach($Q as $i=>$q){
           $IDs[$i] = $i;
           $this->Lineup[$i] = $q;
@@ -95,8 +96,11 @@ class job_writer {
           $Pool['ips'] = $IP_Config;
         }
       }
-      if(!empty($Pool))
+      if(!empty($Pool)){
+        $this->ALERTS[] = PASS('Pool: '.$Pool['name']);
+        $this->ALERTS[] = PASS('IPs: '.count($IP_Config));
         return $Pool;
+      }
       $this->ALERTS[] = FAIL('Pool Not Found! ~ '.$ID.Debug($this->DB));
       return false;
     }
@@ -113,8 +117,10 @@ class job_writer {
         foreach($Q as $q)
           $_S[$q['status']] = $q['status'];
       }
-      if(!empty($_S))
+      if(!empty($_S)){
+        $this->ALERTS[] = PASS('Status: '.implode(', ',$_S));
         return $_S;
+      }
       $this->ALERTS[] = FAIL('Status Not Found! ~ '.$ID.Debug($this->DB));
       return false;
     }
@@ -128,6 +134,7 @@ class job_writer {
       $Offer = $this->DB->GET('MUP.offers.offers',$W,'*',1);
       if(!empty($Offer)){
         $Offer['elements'] = $this->GetOfferElements($ID);
+        $this->ALERTS[] = PASS('Offer: '.$Offer['name']);
         return $Offer;
       }
       $this->ALERTS[] = FAIL('Offer Not Found! ~ '.$ID.Debug($this->DB));
@@ -155,6 +162,7 @@ class job_writer {
         $W = ['list'=>$ID];
         $e = $this->DB->GET('EMAILS.emails.'.$T.'__emails',$W,['md5'=>'id','email','status'],100000);
         $List['size']['total'] = count($e);
+        $this->ALERTS[] = PASS('List: '.$List['name'].' ~ '.count($e));
         if(!empty($e)){
           $e = isset($e['id'])?[$e]:$e;
           foreach($e as $md5=>$email){
@@ -176,11 +184,12 @@ class job_writer {
               }
             }
           }
-          $this->ALERTS[] = PASS($c.' emails suppressed');
+          $this->ALERTS[] = PASS('Suppression: '.$c.' emails removed');
         }
         if(!empty($_E)){
           $List['size']['suppressed'] = count($_E);
           $List['emails'] = $_E;
+          $this->ALERTS[] = PASS('Recipients: '.count($_E));
           return $List;
         }
       }
