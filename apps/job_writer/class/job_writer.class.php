@@ -117,10 +117,8 @@ class job_writer {
         foreach($Q as $q)
           $_S[$q['status']] = $q['status'];
       }
-      if(!empty($_S)){
-        $this->ALERTS[] = PASS('Status: '.implode(', ',$_S));
+      if(!empty($_S))
         return $_S;
-      }
       $this->ALERTS[] = FAIL('Status Not Found! ~ '.$ID.Debug($this->DB));
       return false;
     }
@@ -171,6 +169,7 @@ class job_writer {
               $MD5[$md5] = $md5; 
             }
           }
+          $this->ALERTS[] = PASS('Filter Status: '.implode(', ',$S).' ~ '.count($_E));
           $List['size']['status'] = count($_E);
           $MD5 = array_chunk($MD5,5000);
           $c = 0;
