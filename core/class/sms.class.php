@@ -1,20 +1,20 @@
 <?
 class SMS {
 
-    var $SID;
-    var $TKN;
-    var $NUM;
-    var $DB;
-    var $CON;
+  var $SID;
+  var $TKN;
+  var $NUM;
+  var $DB;
+  var $CON;
 
-    public function __construct()
-     {
-      $this->SID = 'ACcc2a096a4a2b442d99b102f3154ca044';
-      $this->TKN = '0b97c1f21b8c93f6fb672ab63d491112';
-      $this->NUM = '6193464457';
-      $this->DBC();
-      $this->CON();
-     }
+  public function __construct()
+   {
+    $this->SID = 'ACcc2a096a4a2b442d99b102f3154ca044';
+    $this->TKN = '0b97c1f21b8c93f6fb672ab63d491112';
+    $this->NUM = '6193464457';
+    $this->DBC();
+    $this->CON();
+   }
   /**
    * Database Connection
    * Used for accessing stored user phone numbers

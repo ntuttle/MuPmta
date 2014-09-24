@@ -33,6 +33,7 @@ class logger {
       $F = ['type','time','send_date','email','status','error','bounce','jobid','domain','ip','longip','server'];
       if(!empty($this->V)){
         $this->DB->PUT('LOGS.logs.pmta_'.strtoupper(hostname),$F,$V,'DELAYED');
+        file_put_contents(LOGS.'apps/logger/db_insert.log', Debug($this->DB));
         $this->V = [];
         $this->i = 0;
       }

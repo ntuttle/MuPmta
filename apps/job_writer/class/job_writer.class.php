@@ -9,6 +9,10 @@ class job_writer {
       $this->DB = $CFG->DB;
       $this->CheckLineup();
     }
+  /**
+   * CheckLineup
+   * -------------------------
+   **/
   public function CheckLineup()
     {
       $Q = $this->DB->GET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'PENDING','send_date__<='=>'NOW()','active'=>1],['id','listID','json_params'],10);
@@ -22,10 +26,18 @@ class job_writer {
         $this->BuildJobs();
       }
     }
+  /**
+   * ClaimLineup
+   * -------------------------
+   **/
   public function ClaimLineup($IDs)
     {
       $this->DB->SET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'BUILDING'],['id'=>$IDs]);
     }
+  /**
+   * BuildJobs
+   * -------------------------
+   **/
   public function BuildJobs()
     {
       
