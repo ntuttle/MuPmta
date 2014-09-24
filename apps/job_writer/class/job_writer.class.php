@@ -1,11 +1,12 @@
 <?php
 class job_writer {
   
-  var $DB;
   var $Limit = 1;
   var $ID;
+  var $Lineup;
   var $JOB;
   var $ALERTS;
+  var $DB;
 
   public function __construct($CFG)
     {
