@@ -5,5 +5,6 @@ Req('class/job_writer.class.php',__DIR__);
 $JW = new job_writer($CFG);
 
 echo www::ScriptHead('Job Writer');
+echo www::Alt(Debug($JW->ALERTS));
 echo www::Alt(Debug($JW));
 ?>
