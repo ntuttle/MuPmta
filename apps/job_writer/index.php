@@ -6,4 +6,5 @@ $JW = new job_writer($CFG);
 
 echo www::ScriptHead('Job Writer');
 echo www::Alt(implode(LF,$JW->ALERTS));
+echo www::Alt(Debug($JW));
 ?>
