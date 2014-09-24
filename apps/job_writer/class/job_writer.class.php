@@ -125,7 +125,7 @@ class job_writer {
     {
       $W = is_numeric($ID)?['id'=>$ID]:['name'=>$ID];
       $Offer = $this->DB->GET('MUP.offers.offers',$W,'*',1);
-      if(!empty($Q)){
+      if(!empty($Offer)){
         $Offer['elements'] = $this->GetOfferElements($ID);
         return $Offer;
       }
