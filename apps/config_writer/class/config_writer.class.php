@@ -257,14 +257,21 @@ class config_writer {
           $IPS[$q['ip']] = $q['ip'];
           $this->SMTP_Source_Host[$q['ip']] = $q['rdns'];
         }
-      $Q = $this->DB->GET('MUP.ipconfig.target_config', ['ip__IN' => $IPS, 'active' => '1'], ['ip', 'target', 'mailing', 'content', 'rate'], 100000);
-
+      $Q = $this->DB->GET('MUP.ipconfig.target_config', ['ip__IN' => $IPS, 'active' => '1'], ['ip', 'target', 'mailing', 'content', 'msg_rate','con_rate','msg_con'], 100000);
+      $m = '';
       if(!empty($Q = isset($Q['ip'])?[$Q]:$Q)){
         foreach ($Q as $q) {
-          $this->DOMAINS[$q['mailing']]        = $q['mailing'];
-          $this->DOMAINS[$q['content']]        = $q['content'];
-          if($q['rate']>0)
-            $this->VMTAS[$q['ip']][$q['target']] = $q['rate'];
+          $M = $q['mailing'];
+          $C = $q['content'];
+          $this->DOMAINS[$M] = $M;
+          $this->DOMAINS[$C] = $C;
+          if($q['rate']>0){
+            $T = $q['target'];
+            $IP = $q['ip'];
+            $this->VMTAS[$IP][$T]['max-msg-rate'] = $q['msg_rate'];
+            $this->VMTAS[$IP][$T]['max-connect-rate'] = $q['con_rate'];
+            $this->VMTAS[$IP][$T]['max-msg-per-connection'] = $q['msg_con'];
+          }
         }
         return true;
       }
@@ -418,22 +425,33 @@ class config_writer {
   public function VMTA()
     {
       $this->Title('VIRTUAL MTAS');
-      if(!empty($this->SMTP_Source_Host)){
+      if(!empty($this->SMTP_Source_Host))
         foreach ($this->SMTP_Source_Host as $LONGIP => $rDNS) {
-          $IP           = long2ip($LONGIP);
+          $IP = long2ip($LONGIP);
           $this->Conf[] = TAB.'<virtual-mta '.$IP.'>';
           $this->Conf[] = TAB.TAB.'smtp-source-host '.$IP.str_repeat(' ', (20-strlen($IP))).$rDNS;
-          if (!empty($this->VMTAS[$LONGIP])) {
-            foreach ($this->VMTAS[$LONGIP] as $TARGET => $RATE) {
+          if (!empty($this->VMTAS[$LONGIP]))
+            foreach ($this->VMTAS[$LONGIP] as $TARGET => $SETTINGS){
               $this->Conf[] = TAB.TAB.'<domain $'.$TARGET.'>';
-              $this->Conf[] = TAB.TAB.TAB.'max-msg-rate '.$RATE.'/h';
+              foreach($SETTINGS as $D=>$V)
+                $this->Conf[] = $this->SetDirectiveValue($D,$V);
               $this->Conf[] = TAB.TAB.'</domain>';
-            }}
+            }
           $this->Conf[] = TAB.'</virtual-mta>';
         }
-      }
       $this->Conf[] = '';
       return true;
+    }
+  /**
+   * SetDirectiveValue
+   * -------------------------
+   **/
+  public function SetDirectiveValue($D,$V)
+    {
+      $pT = ['max-connect-rate','max-msg-rate'];
+      if(in_array($D,$pT))
+        $V = ($V>=60)?ceil(60/$V).'/m':$V.'/h';
+      return TAB.TAB.TAB.$D.' '.$V;
     }
   /**
    * VMTAPool
@@ -448,17 +466,15 @@ class config_writer {
         $POOLNAMES[$i] = $q['name'];
       }
       $Q = $this->DB->GET('MUP.ipconfig.pool_ips', ['pool_id__IN' => $POOL_IDS, 'active' => '1'], ['longip', 'pool_id'], 100000);
-      foreach ($Q as $q) {
+      foreach ($Q as $q)
         $POOLS[$q['pool_id']][$POOLNAMES[$q['pool_id']]][] = $q['longip'];
-      }
-      foreach ($POOLS as $ID   => $POOL) {
+      foreach ($POOLS as $ID   => $POOL)
         foreach ($POOL as $NAME => $IPS) {
           $this->Conf[] = TAB.'<virtual-mta-pool '.$NAME.'>';
           foreach ($IPS as $IP)
-          $this->Conf[] = TAB.TAB.'virtual-mta'.str_repeat(' ', 5).long2ip($IP);
+            $this->Conf[] = TAB.TAB.'virtual-mta'.str_repeat(' ', 5).long2ip($IP);
           $this->Conf[] = TAB.'</virtual-mta-pool>';
         }
-      }
       $this->Conf[] = '';
       return true;
     }
