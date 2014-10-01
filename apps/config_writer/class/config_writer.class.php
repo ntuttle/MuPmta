@@ -265,12 +265,15 @@ class config_writer {
           $C = $q['content'];
           $this->DOMAINS[$M] = $M;
           $this->DOMAINS[$C] = $C;
-          if($q['rate']>0){
+          if(($q['msg_rate']>0) || ($q['con_rate']>0) || ($q['msg_con']>0)){
             $T = $q['target'];
             $IP = $q['ip'];
-            $this->VMTAS[$IP][$T]['max-msg-rate'] = $q['msg_rate'];
-            $this->VMTAS[$IP][$T]['max-connect-rate'] = $q['con_rate'];
-            $this->VMTAS[$IP][$T]['max-msg-per-connection'] = $q['msg_con'];
+            if($q['msg_rate']>0)
+              $this->VMTAS[$IP][$T]['max-msg-rate'] = $q['msg_rate'];
+            if($q['con_rate']>0)
+              $this->VMTAS[$IP][$T]['max-connect-rate'] = $q['con_rate'];
+            if($q['msg_con']>0)
+              $this->VMTAS[$IP][$T]['max-msg-per-connection'] = $q['msg_con'];
           }
         }
         return true;
@@ -449,8 +452,12 @@ class config_writer {
   public function SetDirectiveValue($D,$V)
     {
       $pT = ['max-connect-rate','max-msg-rate'];
-      if(in_array($D,$pT))
-        $V = ($V>=60)?ceil(60/$V).'/m':$V.'/h';
+      if(in_array($D,$pT)){
+        if(($V%60)>0)
+          $V = $V.'/m';
+        else
+          $V = ($V>=60)?ceil($V/60).'/m':$V.'/h';
+      }
       return TAB.TAB.TAB.$D.' '.$V;
     }
   /**
