@@ -59,6 +59,21 @@ class job_writer {
       }
     }
   /**
+   * GetHistory
+   * -------------------------
+   **/
+  public function GetHistory($IPs)
+    {
+      $W['ip__IN'] = $IPs;
+      $W['target'] = $this->Target;
+      $Q = $this->DB->GET('MUP.ranges.meta__'.date('Ymd'),$W,'*',count($IPs));
+      if(!empty($Q))
+        $Q = isset($Q['ip'])?[$Q]:$Q;
+      else
+        $Q = false;
+      return $Q;
+    }
+  /**
    * GetPool
    * -------------------------
    **/
@@ -75,6 +90,7 @@ class job_writer {
           $IPs = isset($IPs['longip'])?[$IPs]:$IPs;
           foreach($IPs as $IP)
             $_IPs[$IP['longip']] = $IP['longip'];
+          $Pool['history']= $this->GetHistory($_IPs);
           $W = ['ip__IN'=>$_IPs,'active'=>1,'pmta'=>hostID];
           $F = ['ip','rdns'];
           $IPd = $this->DB->GET('MUP.ipconfig.global_config',$W,$F,count($_IPs));
@@ -82,23 +98,22 @@ class job_writer {
           foreach($IPd as $_d)
             $IP_Config[$_d['ip']] = ['ip'=>long2ip($_d['ip']),'rdns'=>$_d['rdns']];
           $W = ['ip__IN'=>$_IPs,'active'=>1,'target'=>$this->Target];
-          $F = ['ip'=>'id','ip','mailing','content','rate','threshold','speedLimit'];
+          $F = ['ip'=>'id','ip','mailing','content','msg_con','msg_rate','con_rate'];
           $IPd = $this->DB->GET('MUP.ipconfig.target_config',$W,$F,count($_IPs));
-          foreach($IPd as $_d){
+          foreach($IPd as $_d)
             if(isset($IP_Config[$_d['ip']]['ip'])){
-              $IP_Config[$_d['ip']]['mailing']    = $_d['mailing'];
-              $IP_Config[$_d['ip']]['content']    = $_d['content'];
-              $IP_Config[$_d['ip']]['rate']       = $_d['rate'];
-              $IP_Config[$_d['ip']]['threshold']  = $_d['threshold'];
-              $IP_Config[$_d['ip']]['speedLimit'] = $_d['speedLimit'];
+              $IP_Config[$_d['ip']]['mailing'] = $_d['mailing'];
+              $IP_Config[$_d['ip']]['content'] = $_d['content'];
+              $IP_Config[$_d['ip']]['msg_rate'] = $_d['msg_rate'];
+              $IP_Config[$_d['ip']]['msg_con'] = $_d['msg_con'];
+              $IP_Config[$_d['ip']]['con_rate'] = $_d['con_rate'];
             }
-          }
           $Pool['ips'] = $IP_Config;
         }
       }
       if(!empty($Pool)){
-        $this->ALERTS[] = PASS('Pool: '.$Pool['name']);
-        $this->ALERTS[] = PASS('IPs: '.count($IP_Config));
+        $this->ALERTS[] = PASS('Pool: '.$Pool['name'].' ('.count($_IPs).' IPs)');
+        $this->ALERTS[] = PASS('Active IPs: '.count($IP_Config));
         return $Pool;
       }
       $this->ALERTS[] = FAIL('Pool Not Found! ~ '.$ID.Debug($this->DB));
