@@ -1,19 +1,17 @@
 <?
 class config_writer {
-
   var $DB;
   var $Debug = false;
-
   public function __construct($DB,$ARGS=false)
     {
       $this->DB   = $DB;
       $this->SetVariables();
     }
-  /**
+  /**                                  
    * SetVariables
    * -------------------------
    **/
-  public function SetVariables()
+  public function SetVariables()       
     {
       define('TAB',str_repeat(' ',5));
       $this->Title(true);
@@ -25,34 +23,34 @@ class config_writer {
       $this->BounceCategories();
       $this->BuildConfig();
     }
-  /**
+  /**                                  
    * SetPMTA
    * -------------------------
    * get all server vaiables for this hostID
    * -------------------------
    **/
-  public function SetPMTA()
+  public function SetPMTA()            
     {
       $this->PMTA = $this->DB->GET('MUP.hardware.servers', ['id' => hostID], '*', 1);
       if (!$this->PMTA)
         trigger_error('Invalid PMTA!');
     }
-  /**
+  /**                                  
    * TargetConfigs
    * -------------------------
    **/
-  public function TargetConfigs()
+  public function TargetConfigs()      
     {
       $Q = $this->DB->GET('MUP.pmta.config__targets',['scope'=>'domain','ORDER'=>'name'],'*',100000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
         foreach ($Q as $i => $q)
           $this->RawConfig[] = $q;
     }
-  /**
+  /**                                  
    * PatternLists
    * -------------------------
    **/
-  public function PatternList()
+  public function PatternList()        
     {
       $Q = $this->DB->GET('MUP.pmta.config__pattern_list', ['id__>=' => '0'], '*', 100000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
@@ -64,11 +62,11 @@ class config_writer {
           $this->RawConfig[] = $q;
         }
     }
-  /**
+  /**                                  
    * SMTPPatternLists
    * -------------------------
    **/
-  public function SMTPPatternLists()
+  public function SMTPPatternLists()   
     {
       $Q = $this->DB->GET('MUP.pmta.config__smtp_pattern_list', ['id__>=' => '0'], '*', 100000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
@@ -80,11 +78,11 @@ class config_writer {
           $this->RawConfig[] = $q;
         }
     }
-  /**
+  /**                                  
    * BounceCategories
    * -------------------------
    **/
-  public function BounceCategories()
+  public function BounceCategories()   
     {
       $Q                       = $this->DB->GET('MUP.pmta.config__bounce_categories', ['id__>=' => '0'], '*', 100000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
@@ -96,13 +94,13 @@ class config_writer {
           $this->RawConfig[] = $q;
         }
     }
-  /**
+  /**                                  
    * GetRawConfig
    * -------------------------
    * Get the configuration settings currently in the database
    * -------------------------
    **/
-  public function GetRawConfig()
+  public function GetRawConfig()       
     {
       $Q = $this->DB->GET('MUP.pmta.config__global', ['active' => '1'], '*', 1000000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
@@ -114,21 +112,21 @@ class config_writer {
           return true;
       return false;
     }
-  /**
+  /**                                  
    * GetRawServerConfig
    * -------------------------
    * Get the configuration settings for this specific
    * server currently in the database
    * -------------------------
    **/
-  public function GetRawServerConfig()
+  public function GetRawServerConfig() 
     {
       $Q = $this->DB->GET('MUP.pmta.config__'.$this->PMTA['name'], ['active' => '1'], '*', 1000000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
         foreach ($Q as $i => $q)
           $this->RawConfig[] = $q;
     }
-  /**
+  /**                                  
    * Space
    * -------------------------
    * Create a space size based on the length of the 
@@ -137,7 +135,7 @@ class config_writer {
    * @param string $D // the directive to determine space length from
    * -------------------------
    **/
-  public function Space($D,$s=32)
+  public function Space($D,$s=32)      
     {
       $L = is_string($D)?strlen($D):1;
       $S = ($s-$L);
@@ -145,13 +143,13 @@ class config_writer {
       $_ = str_repeat(' ',$l);
       return $_;
     }
-  /**
+  /**                                  
    * BuildConfig
    * -------------------------
    * Reconcile Server & Global Configuration
    * -------------------------
    **/
-  public function BuildConfig()
+  public function BuildConfig()        
     {
       if ($this->GetRawConfig()){
         $this->PMTAGlobals();
@@ -166,18 +164,18 @@ class config_writer {
       }
       $this->Title(false);
     }
-  /**
+  /**                                  
    * Sources
    * -------------------------
    **/
-  public function Sources()
+  public function Sources()            
     {
       $Q = $this->DB->GET('MUP.pmta.config__sources',['scope'=>'source','ORDER'=>['name'=>'DESC']],'*',100000);
       if(!empty($Q = isset($Q['id'])?[$Q]:$Q))
         foreach ($Q as $i => $q)
           $this->RawConfig[] = $q;
     }
-  /**
+  /**                                  
    * FormatScope
    * -------------------------
    * create a formatted scope for pmta configuration 
@@ -188,7 +186,7 @@ class config_writer {
    * @param array $D // array of [scopename=>[directive=>value],...]
    * -------------------------
    **/
-  public function FormatScope($S,$N)
+  public function FormatScope($S,$N)   
     {
       $this->Title($S.'s');
       foreach ($N as $n => $D) {
@@ -200,7 +198,7 @@ class config_writer {
       }
       $this->Conf[] = '';
     }
-  /**
+  /**                                  
    * FormatDirectives
    * -------------------------
    * Create a formatted directive and value entry
@@ -217,7 +215,7 @@ class config_writer {
           $this->Conf[] = TAB.$TAB.$k.$this->Space($k).$v;
         }
     }
-  /**
+  /**                                  
    * ReplacePlaceholders
    * -------------------------
    * replace placeholders with server specific details
@@ -244,11 +242,11 @@ class config_writer {
         $_v = str_replace('[DIR]',DIR,$_v);
       return $_v;
     }
-  /**
+  /**                                  
    * GetActiveIPs
    * -------------------------
    **/
-  public function GetActiveIPs()
+  public function GetActiveIPs()       
     {
       $Q = $this->DB->GET('MUP.ipconfig.global_config', ['active' => '1', 'pmta' => $this->PMTA['id']], ['ip', 'rdns'], 10000);
 
@@ -279,11 +277,11 @@ class config_writer {
         return true;
       }
     }
-  /**
+  /**                                  
    * ParseRawConfig
    * -------------------------
    **/
-  public function ParseRawConfig()
+  public function ParseRawConfig()     
     {
       if(!empty($this->RawConfig)){
         foreach ($this->RawConfig as $i => $c) {
@@ -297,11 +295,11 @@ class config_writer {
         return true;
       return false;
     }
-  /**
+  /**                                  
    * PMTAGlobals
    * -------------------------
    **/
-  public function PMTAGlobals()
+  public function PMTAGlobals()        
     {
       $this->Title(strtoupper($this->PMTA['name']).' - PMTA Configuration');
       if(!empty($this->CONFIG['GLOBAL'])){
@@ -312,11 +310,11 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * Title
    * -------------------------
    **/
-  public function Title($TITLE=false)
+  public function Title($TITLE=false)  
     {
       if(!$TITLE){
         $TITLE = ' END - PowerMTA config';
@@ -336,19 +334,19 @@ class config_writer {
       $this->Conf[] = '# '.strtoupper($TITLE).str_repeat(' ',(100-strlen($TITLE))).' #';
       $this->Conf[] = '#'.str_repeat('-', 102).'#';
     }
-  /**
+  /**                                  
    * Breaker
    * -------------------------
    **/
-  public function Breaker()
+  public function Breaker()            
     {
       $this->Conf[] = TAB.'#'.str_repeat('  --- ', 16).' #';
     }
-  /**
+  /**                                  
    * AccessList
    * -------------------------
    **/
-  public function AccessList()
+  public function AccessList()         
     {
       $this->Title('Access List');
       $ACL = $this->DB->GET('MUP.presets.access');
@@ -365,11 +363,11 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * TargetMacros
    * -------------------------
    **/
-  public function TargetMacros()
+  public function TargetMacros()       
     {
       $this->Title('Target Domain Macros');
       $Q = $this->DB->GET('MUP.domains.targets', ['active' => '1'], '*', 100000);
@@ -379,11 +377,11 @@ class config_writer {
         $this->Conf[] = TAB.'domain-macro'.str_repeat(' ', 8).$target.str_repeat(' ', (15-strlen($target))).implode(', ', $domains);
       $this->DomainMacros();
     }
-  /**
+  /**                                  
    * DomainMacros
    * -------------------------
    **/
-  public function DomainMacros()
+  public function DomainMacros()       
     {
       if(!empty($this->DOMAINS)){
         $this->Conf[] = TAB.'domain-macro'.str_repeat(' ', 8).'domains'.str_repeat(' ', 5).implode(', ', $this->DOMAINS);
@@ -395,11 +393,11 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * RelayDomain
    * -------------------------
    **/
-  public function RelayDomain()
+  public function RelayDomain()        
     {
       $this->Title('RELAY OUR DOMAINS');
       if(!empty($this->DOMAINS))
@@ -408,11 +406,11 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * DKIM
    * -------------------------
    **/
-  public function DKIM()
+  public function DKIM()               
     {
       $this->Title('DKIM / DOMAIN KEYS');
       if(!empty($this->DOMAINS))
@@ -421,11 +419,11 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * VMTA
    * -------------------------
    **/
-  public function VMTA()
+  public function VMTA()               
     {
       $this->Title('VIRTUAL MTAS');
       if(!empty($this->SMTP_Source_Host))
@@ -445,7 +443,7 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * SetDirectiveValue
    * -------------------------
    **/
@@ -460,11 +458,11 @@ class config_writer {
       }
       return TAB.TAB.TAB.$D.' '.$V;
     }
-  /**
+  /**                                  
    * VMTAPool
    * -------------------------
    **/
-  public function VMTAPool()
+  public function VMTAPool()           
     {
       $Q = $this->DB->GET('MUP.ipconfig.pools', ['server_id' => $this->PMTA['id'], 'active' => '1'], ['id', 'name'], 100000);
       $this->Title('VIRTUAL MTA POOLS');
@@ -485,11 +483,11 @@ class config_writer {
       $this->Conf[] = '';
       return true;
     }
-  /**
+  /**                                  
    * Debug
    * -------------------------
    **/
-  public function Debug($VAL)
+  public function Debug($VAL)          
     {
       if ($this->Debug) {X::Debug($VAL);}
       return true;

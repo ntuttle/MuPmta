@@ -1,23 +1,21 @@
 <?php
 class job_writer {
-  
-  var $Limit = 1;
+    var $Limit = 1;
   var $ID;
   var $Lineup;
   var $JOB;
   var $ALERTS;
   var $DB;
-
-  public function __construct($CFG)
+  public function __construct($CFG)    
     {
       $this->DB = $CFG->DB;
       $this->CheckLineup();
     }
-  /**
+  /**                                  
    * CheckLineup
    * -------------------------
    **/
-  public function CheckLineup()
+  public function CheckLineup()        
     {
       $Q = $this->DB->GET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'PENDING','send_date__<='=>'NOW()','active'=>1],['id','listID','json_params'],$this->Limit);
       if(!empty($Q)){
@@ -31,22 +29,22 @@ class job_writer {
         $this->BuildJobs();
       }
     }
-  /**
+  /**                                  
    * ClaimLineup
    * -------------------------
    **/
-  public function ClaimLineup($IDs)
+  public function ClaimLineup($IDs)    
     {
       $count = count($IDs);
       $this->DB->SET('MUP.jobs.lineup__'.strtoupper(hostname),['status'=>'BUILDING'],['id'=>$IDs],$count);
       if($this->DB->aR < $count)
         $this->ALERTS[] = FAIL('Problem with claiming lineup ids!'.Debug($this->DB));
     }
-  /**
+  /**                                  
    * BuildJobs
    * -------------------------
    **/
-  public function BuildJobs()
+  public function BuildJobs()          
     {
       foreach($this->Lineup as $i=>$l){
         $j = json_decode($l['json_params']);
@@ -58,11 +56,11 @@ class job_writer {
         $this->JOB[$i] = $_;
       }
     }
-  /**
+  /**                                  
    * GetHistory
    * -------------------------
    **/
-  public function GetHistory($IPs)
+  public function GetHistory($IPs)     
     {
       $W['ip__IN'] = $IPs;
       $W['target'] = $this->Target;
@@ -73,11 +71,11 @@ class job_writer {
         $Q = false;
       return $Q;
     }
-  /**
+  /**                                  
    * GetPool
    * -------------------------
    **/
-  public function GetPool($ID)
+  public function GetPool($ID)         
     {
       $W = is_numeric($ID)?['id'=>$ID]:['name'=>$ID];
       $W['active'] = 1;
@@ -119,11 +117,11 @@ class job_writer {
       $this->ALERTS[] = FAIL('Pool Not Found! ~ '.$ID.Debug($this->DB));
       return false;
     }
-  /**
+  /**                                  
    * GetStatus
    * -------------------------
    **/
-  public function GetStatus($ID)
+  public function GetStatus($ID)       
     {
       $W = ['group_id'=>$ID];
       $Q = $this->DB->GET('EMAILS.lists.list_dyn_group_status',$W,['status_id'=>'id','status_id'=>'status']);
@@ -137,11 +135,11 @@ class job_writer {
       $this->ALERTS[] = FAIL('Status Not Found! ~ '.$ID.Debug($this->DB));
       return false;
     }
-  /**
+  /**                                  
    * GetOffer
    * -------------------------
    **/
-  public function GetOffer($ID)
+  public function GetOffer($ID)        
     {
       $W = is_numeric($ID)?['id'=>$ID]:['name'=>$ID];
       $Offer = $this->DB->GET('MUP.offers.offers',$W,'*',1);
@@ -153,7 +151,7 @@ class job_writer {
       $this->ALERTS[] = FAIL('Offer Not Found! ~ '.$ID.Debug($this->DB));
       return false;
     }
-  /**
+  /**                                  
    * GetOfferElements
    * -------------------------
    **/
@@ -161,11 +159,11 @@ class job_writer {
     {
 
     }
-  /**
+  /**                                  
    * GetList
    * -------------------------
    **/
-  public function GetList($ID,$S,$s)
+  public function GetList($ID,$S,$s)   
     {
       $W = is_numeric($ID)?['id'=>$ID]:['name'=>$ID];
       $W['active'] = 1;
@@ -190,6 +188,7 @@ class job_writer {
           $c = 0;
           foreach($MD5 as $chunck){
             $sup = $this->DB->GET('MUP.suppression.sublists__'.$s,['md5__IN'=>$chunck],['md5'=>'id','md5'],count($chunck));
+            echo Debug($this->DB);
             if(!empty($sup)){
               $sup = isset($sup['id'])?[$sup]:$sup;
               foreach($sup as $_sup){

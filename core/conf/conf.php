@@ -2,18 +2,18 @@
 class CFG {
   var $settings;
   var $DB;
-  public function __construct($ARGS)
+  public function __construct($ARGS)   
     {
       $this->start = time();
       $this->SetGlobals($ARGS);
     }
-  /** 
+  /**                                  
    * SetGlobals
    * -------------------------
    * Set the running directories
    * -------------------------
    **/
-  public function SetGlobals($ARGS)
+  public function SetGlobals($ARGS)    
     {
       $this->ARGS = $ARGS;
       $this->user = $ARGS['user'];
@@ -28,7 +28,7 @@ class CFG {
       $this->CheckDB(@$ARGS['hosts']);
       $this->CheckHost(@$ARGS['host']);
     }
-  /** 
+  /**                                  
    * IniSet
    * -------------------------
    * Set any php.ini directives before any script output if needed
@@ -36,7 +36,7 @@ class CFG {
    * @param array $INI // array of [ directive => value [, ...] ]
    * -------------------------
    **/
-  public function IniSet($INI=false)
+  public function IniSet($INI=false)   
     {
       $this->settings = $this->defaultINI();
       if(!empty($INI))
@@ -45,18 +45,18 @@ class CFG {
           ini_set($N,$V);
         }
     }
-  /**
+  /**                                  
    * defaultINI
    * -------------------------
    * Set default php.ini settings
    * -------------------------
    **/
-  public function defaultINI()
+  public function defaultINI()         
     {
       include CONF.'ini.php';
       return $INI;
     }
-  /** 
+  /**                                  
    * SetStyles
    * -------------------------
    * return the value of a variable, while 
@@ -65,7 +65,7 @@ class CFG {
    * @param mixed $X // variable to unset and return
    * -------------------------
    **/
-  public function SetStyles()
+  public function SetStyles()          
     {
       $O = $this->GetScriptOutput();
       if($O=='html')
@@ -90,19 +90,19 @@ class CFG {
       define('FAIL', red."FAILED! ".white);
       define('PASS', green."PASSED! ".white);
     }
-  /** 
+  /**                                  
    * GetScriptOutput
    * -------------------------
    * determine the output format needed for the running script
    * -------------------------
    **/
-  public function GetScriptOutput()
+  public function GetScriptOutput()    
     {
       if(!defined('output'))
         define('output',false);
       return output;
     }
-  /** 
+  /**                                  
    * CheckDB
    * -------------------------
    * Connect to all the hosts provided using correct 
@@ -113,7 +113,7 @@ class CFG {
    * $HOST = array('NAME' => array('IP'[,'IP2'] [,PORT]));
    * -------------------------
    **/
-  public function CheckDB($HOSTS)
+  public function CheckDB($HOSTS)      
     {
       $i = ($this->debug === true)?'public':'private';
       $U = $this->user;
@@ -134,7 +134,7 @@ class CFG {
       }
       trigger_error('No Valid Database Hosts Provided');
     }
-  /** 
+  /**                                  
    * NewDB
    * -------------------------
    * Initiate a new DBC Object with a new persistant 
@@ -154,7 +154,7 @@ class CFG {
       $_ = isset($DB->S[$N])?$DB:'Initial DB Connection Failed';
       return empty($DB)?Quit('No Initial Database Connection'):$DB;
     }
-  /** 
+  /**                                  
    * CheckHost
    * -------------------------
    * get server hostname and check for active status
@@ -163,7 +163,7 @@ class CFG {
    * @param string $HN // pass a specific hostname. false will use hostname where the script is running.
    * -------------------------
    **/
-  public function CheckHost($HN=false)
+  public function CheckHost($HN=false) 
     {
       $H = empty($HN)?trim(strtolower(gethostname())):$HN;
       $Q = $this->DB->GET('MUP.hardware.servers',['type'=>'PMTA','active'=>1,'name'=>$H],['name','id'],1);
@@ -176,11 +176,11 @@ class CFG {
         Quit('Invalid Hostname!');
       }
     }
-  /** 
+  /**                                  
    * Dependancies
    * -------------------------
    **/
-  public function Dependancies()
+  public function Dependancies()       
     {
       foreach(['db','form','sms','table'] as $d)
         $D[] = $d.'.class.php';

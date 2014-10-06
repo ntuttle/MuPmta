@@ -1,5 +1,5 @@
 <?
-/** 
+/**                                    
  * assign
  * -------------------------
  * return the value of a variable, while 
@@ -8,13 +8,13 @@
  * @param mixed $X // variable to unset and return
  * -------------------------
  **/
-function assign(&$X)
+function assign(&$X)                   
   {
     $x = $X;
     unset($X);
     return $x;
   }
-/** 
+/**                                    
  * RegisterGlobals
  * -------------------------
  *    G = $_GET
@@ -28,18 +28,18 @@ function assign(&$X)
  * default = GPC
  * -------------------------
  **/
-function RegisterGlobals($o='GPC')
+function RegisterGlobals($o='GPC')     
   {
     $o = str_split(strtolower($o));
     array_map('RegisterArray',$o);
   }
-/** 
+/**                                    
  * RegisterArray
  * -------------------------
  * Set Array into Global variables
  * -------------------------
  **/
-function RegisterArray($X)
+function RegisterArray($X)             
   {
     static $__    = [
       'e' => '_ENV',
@@ -53,11 +53,11 @@ function RegisterArray($X)
     foreach( $$__[$X] as $k=>$v)
       $VARS[$k] = $v;
   }
-/**
+/**                                    
  * Write
  * -------------------------
  **/
-function Quit($MSG)
+function Quit($MSG)                    
   {
     $MSG = is_array($MSG)?$MSG:[$MSG];
     $ALERT = [];
@@ -69,44 +69,44 @@ function Quit($MSG)
       echo implode($BR,$ALERT).$BR;
     exit();
   }
-/**
+/**                                    
  * Write
  * -------------------------
  **/
-function Write($message = false)
+function Write($message = false)       
   {
     return $message.setBR();
   }
-/**
+/**                                    
  * PASS
  * -------------------------
  **/
-function PASS($message = false)
+function PASS($message = false)        
   {
     return setClr('  OK!  ','green').' ~ '.$message.setBR();
   }
-/**
+/**                                    
  * FAIL
  * -------------------------
  **/
-function FAIL($message = false)
+function FAIL($message = false)        
   {
     return setClr('ERROR! ','red',['bold','intense']).' ~ '.$message.setBR();
   }
-/**
+/**                                    
  * setBR
  * -------------------------
  **/
-function setBR()
+function setBR()                       
   {
     $BR = empty(LF)?"<br>":LF;
     return $BR;
   }
-/**
+/**                                    
  * setClr
  * -------------------------
  **/
-function setClr($M,$C=false,$S=false)
+function setClr($M,$C=false,$S=false)  
   {
     if(defined('output') && (output == 'html')){
       switch ($C) {
@@ -136,7 +136,7 @@ function setClr($M,$C=false,$S=false)
       $_ = BashCLR($C,$S).$M.BashCLR();
     return $_;
   }
-/**
+/**                                    
  * BashCLR
  * -------------------------
  * translate readable color to bash color code
@@ -147,7 +147,7 @@ function setClr($M,$C=false,$S=false)
  * $C Opts: black , red , green , yellow , blue , purple , cyan
  * $S Opts: underline , bold , intense , background
  **/
-function BashCLR($C=false,$T=false)
+function BashCLR($C=false,$T=false)    
   {
     switch ($C) {
       case 'black':  $_C = 30;
@@ -181,13 +181,13 @@ function BashCLR($C=false,$T=false)
     $CLR = "'\e[{$_S}{$_C}'";
     return $CLR;
   }
-/** 
+/**                                    
  * SetDIR
  * -------------------------
  * Set the running directories
  * -------------------------
  **/
-function SetDIR()
+function SetDIR()                      
   {
     $DIR = str_ireplace('\\core', '', __DIR__);
     $DIR = str_ireplace('core', '', $DIR);
@@ -199,7 +199,7 @@ function SetDIR()
     define('CORE', DIR.'core/');
     define('CONF', CORE.'conf/');
   }
-/**
+/**                                    
  * Req
  * -------------------------
  * Require supplied files if they exist
@@ -207,7 +207,7 @@ function SetDIR()
  * @param mixed $D // array or string of filenames ~( include full paths! )
  * -------------------------
  **/
-function Req($D,$P=false)
+function Req($D,$P=false)              
   {
     if(!empty($D)){
       $P = empty($P)?false:rtrim($P,'/').'/';
@@ -230,7 +230,7 @@ function Req($D,$P=false)
       $_ = implode(LF,$x);
     return $c.@$_;
   }
-/**
+/**                                    
  * ErrorOut
  * -------------------------
  * Custom Error Handler that displays the current
@@ -261,18 +261,18 @@ function ErrorOut($errno, $errstr, $errfile, $errline)
     echo "<pre>{$E}</pre>";
     return true;
   }
-/**
+/**                                    
  * SetErrorHandler
  * -------------------------
  **/
-function SetErrorHandler()
+function SetErrorHandler()             
   {
     set_error_handler('ErrorOut');
   }
-/**
+/**                                    
  * Debug
  **/
-function Debug($C,$T=false)
+function Debug($C,$T=false)            
   {
     $_[] = "<pre>";
     $_[] = "<b>{$T}</b><hr >";
@@ -282,10 +282,10 @@ function Debug($C,$T=false)
     $_[] = "</pre>";
     return implode(LF,$_);
   }
-/**
+/**                                    
  * CheckDirs
  **/
-function CheckDirs($D=false)
+function CheckDirs($D=false)           
   {
     $_D[] = LOGS;
     $_D[] = LOGS.'pmta/';
@@ -299,17 +299,17 @@ function CheckDirs($D=false)
         if(!file_exists($d))
           mkdir($d);
   }
-/**
+/**                                    
  * LineBreak
  * -------------------------
  **/
-function LineBreak($string)
+function LineBreak($string)            
   {
     if(!is_string($string)) return $string;
     $string = explode("\n",str_ireplace("\r",'',$string));
     return $string;
   }
-// Run some startup script stuff
+// Run some startup script stuff       
   SetDIR();
   SetErrorHandler();
   CheckDirs();
