@@ -74,6 +74,7 @@ class CFG {
           define('green',  "<span style=\"color:green\">");
           define('yellow', "<span style=\"color:yellow\">");
           define('grey',   "<span style=\"color:grey\">");
+          define('aqua',   "<span style=\"color:aqua\">");
           define('white',  "</span>");
         }
       else
@@ -82,6 +83,7 @@ class CFG {
           define('green',  "\e[1;32m");
           define('yellow', "\e[1;93m");
           define('grey',   "\e[1;90m");
+          define('aqua',   "\e[1;36m");
           define('white',  "\e[0m");
         }
       define('LF', "\n");

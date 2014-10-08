@@ -109,7 +109,7 @@ class TelNetTest {
 		}
 	}
 	public function Connect() {
-		$this->Write(yellow.'CONNECT FROM '.$this->IP.EOL.white);
+		$this->Write(aqua.'CONNECT FROM '.$this->IP.EOL.white);
 		$socket_context = stream_context_create(array('socket' => array('bindto' => $this->IP.':0')));
 		$this->SOCK     = stream_socket_client($this->MX.':25', $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $socket_context);
 		if ($this->SOCK !== false) {
@@ -131,7 +131,7 @@ class TelNetTest {
 		}
 	}
 	public function Exec($CMD, &$OUT) {
-		$this->Write(yellow.htmlspecialchars($CMD).white.EOL);
+		$this->Write(aqua.htmlspecialchars($CMD).white.EOL);
 		fputs($this->SOCK, $CMD.EOL);
 		$OUT = fread($this->SOCK, 1024);
 		$this->Write($OUT);
