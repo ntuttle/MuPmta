@@ -28,7 +28,7 @@ if (!isset($_POST['ip'])) {
     var body = $('#body').val();
     $('td#results').html('<h3>Working... Please Wait...</h3>');
     $.post(window.location.href,{ip:ip,ehlo:ehlo,from:from,to:to,mailfrom:mailfrom,headers:headers,body:body,subject:subject},function(data){
-      $('td#results').html('<pre>'+data+'</pre>');
+      $('td#results').html(data);
     });
   });");
 	$F = $F->PrintForm();
