@@ -289,6 +289,19 @@ class www {
       $S['span > b']      = [
         'color'           => 'inherit'
         ];
+      $S['form input[type=text]']      = [
+        'border'          => '1px solid black'
+        ];
+      $S['label'] = [
+        'display'         => 'inline-block',
+        'width'           => '300px',
+        'text-align'      => 'right'
+      ];
+      $S['label.title'] = [
+        'display'         => 'inline-block',
+        'width'           => '100px !important',
+        'text-align'      => 'left'
+      ];
       foreach($S as $e=>$s){
         $C = [$e.'{'];
         foreach($s as $k=>$v)

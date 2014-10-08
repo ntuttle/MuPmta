@@ -1,6 +1,6 @@
 <?php
 class job_writer {
-    var $Limit = 1;
+  var $Limit = 2;
   var $ID;
   var $Lineup;
   var $JOB;
