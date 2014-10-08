@@ -6,14 +6,16 @@
 
 if (!isset($_POST['ip'])) {
 	$F = new FORMS('TelNetTest', 'Telnet Email Testing', false, 500);
-	$F->Text('ip').$F->Br();
-	$F->Text('ehlo').$F->Br();
-	$F->Text('mailfrom').$F->Br();
-	$F->Text('to').$F->Br();
-	$F->Text('from').$F->Br();
-	$F->Text('subject').$F->Br();
-	$F->Textarea('headers', false, false, 460, 100).$F->Br();
-	$F->Textarea('body', false, false, 460, 250).$F->Br();
+	$F->Text('ip',['IP Address'=>false],false);
+	$F->Text('ehlo',['EHLO'=>false],false);
+	$F->Text('mailfrom',['Mail From'=>false],false);
+	$F->Text('to',['To'=>false],false);
+	$F->Text('from',['From'=>false],false);
+	$F->Text('subject',['Subject Line'=>false],false);
+  $F->write('<b style="padding:25px 0px 0px;">Additional Headers</b>');
+	$F->Textarea('headers', false, false, 460, 100);
+  $F->write('<b style="padding:25px 0px 0px;">Body</b>');
+	$F->Textarea('body', false, false, 460, 250);
 	$F->Button('TelNetTest', 'send test');
 	$F->JS("$('button#TelNetTest').click(function(){
     var ip = $('#ip').val();

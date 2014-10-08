@@ -290,17 +290,28 @@ class www {
         'color'           => 'inherit'
         ];
       $S['form input[type=text]']      = [
-        'border'          => '1px solid black'
+        'border'          => '1px dashed grey',
+        'padding'         => '5px 10px',
+        'background'      => '#FFF3D1'
         ];
-      $S['label'] = [
+      $S['label.input'] = [
         'display'         => 'inline-block',
         'width'           => '300px',
         'text-align'      => 'right'
       ];
+      $S['input[type=text]'] = [
+        'width'           => '300px',
+        'margin'          => '0px 0px 10px'
+      ];
+      $S['textarea'] = [
+        'width'           => '500px',
+        'border'          => '1px dashed grey',
+        'background'      => '#FFF3D1'
+      ];
       $S['label.title'] = [
-        'display'         => 'inline-block',
         'width'           => '100px !important',
-        'text-align'      => 'left'
+        'text-align'      => 'right',
+        'padding'         => '5px 10px'
       ];
       foreach($S as $e=>$s){
         $C = [$e.'{'];
