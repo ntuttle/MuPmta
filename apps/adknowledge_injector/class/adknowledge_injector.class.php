@@ -34,13 +34,15 @@ class adknowledge_injector {
    **/
   public function GetBodyParts($EMAIL)
     {
+      echo "<pre>";
       list($user,$domain) = explode('@',$EMAIL);
-      $_['email'] = ['recipient'=> md5($EMAIL),
-                      'list'    => '1',
-                      'domain'  => $domain  ];
+      $_['email'] = [md5($EMAIL)=> 'recipient',
+                      '1'       => 'list',
+                      $domains  => 'domain'];
       $xml = new SimpleXMLElement('<request/>');
       array_walk_recursive($_, array ($xml, 'addChild'));
       print htmlspecialchars( $xml->asXML());
+      echo "</pre>";
     }
   /**                                  
    * GetEmails
