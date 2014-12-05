@@ -28,10 +28,8 @@ class adknowledge_injector {
           $this->GetBodyParts($EMAIL);
       }
       $xml = new SimpleXMLElement('<request/>');
-      array_walk_recursive($this->_, array ($xml, 'addChild'));
-      echo "<pre>";
-      print htmlspecialchars( $xml->asXML());
-      echo "</pre>";
+      $this->array_to_xml($this->_,$xml);
+      $xml->asXML(__DIR__.'/tmp.xml');
     }
   /**                                  
    * GetBodyParts
@@ -44,6 +42,24 @@ class adknowledge_injector {
                         '1'        => 'list',
                         $domain    => 'domain']];
     }
+  public function array_to_xml($info, &$xml_info) {
+    foreach($student_info as $key => $value) {
+        if(is_array($value)) {
+            if(!is_numeric($key)){
+                $subnode = $xml_student_info->addChild("$key");
+                array_to_xml($value, $subnode);
+            }
+            else{
+                $subnode = $xml_student_info->addChild("item$key");
+                array_to_xml($value, $subnode);
+            }
+        }
+        else {
+            $xml_student_info->addChild("$key",htmlspecialchars("$value"));
+        }
+    }
+}
+
   /**                                  
    * GetEmails
    * -------------------------
