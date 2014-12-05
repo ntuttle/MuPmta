@@ -26,7 +26,12 @@ class adknowledge_injector {
     {
       $HostID = hostID;
       $Q = $this->DB->GET('MUP.ipconfig.global_config',['pmta'=>$HostID,'active'=>1]);
+      $IP = $Q[array_rand($Q)];
+      $RDNS = $IP['rdns'];
+      $Q = $this->DB->GET('MUP.ipconfig.target_config',['ip'=>$IP['ip'],'active'=>1]);
+      echo "<pre>";
       print_r($Q);
+      echo "</pre>";
     }
   /**                                  
    * SendToList
@@ -59,23 +64,21 @@ class adknowledge_injector {
    * array_to_xml
    * -------------------------
    **/
-  public function array_to_xml($info, &$xml_info) {
-    foreach($info as $key => $value) {
-        if(is_array($value)) {
-            if(!is_numeric($key)){
-                $subnode = $xml_info->addChild("$key");
-                $this->array_to_xml($value, $subnode);
-            }
-            else{
-                $subnode = $xml_info->addChild("item$key");
-                $this->array_to_xml($value, $subnode);
-            }
-        }
-        else {
-            $xml_info->addChild("$key",htmlspecialchars("$value"));
-        }
+  public function array_to_xml($info, &$xml_info)
+    {
+      foreach($info as $key => $value) {
+        if(is_array($value))
+          if(!is_numeric($key)){
+            $subnode = $xml_info->addChild("$key");
+            $this->array_to_xml($value, $subnode);
+          }else{
+            $subnode = $xml_info->addChild("item$key");
+            $this->array_to_xml($value, $subnode);
+          }
+        else
+          $xml_info->addChild("$key",htmlspecialchars("$value"));
+      }
     }
-}
 
   /**                                  
    * GetEmails
@@ -88,7 +91,7 @@ class adknowledge_injector {
     }
   public function StartAPI()
     {
-
+      // MAKE API CALL HERE TO ADKNOWLEDGE WITH COMPILED PARTS
     }
 }
 ?>
