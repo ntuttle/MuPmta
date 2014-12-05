@@ -6,7 +6,7 @@
   $_['debug']   =  true;
   $_['user']    = 'root';
   $_['pass']    = 'ca1ad6dbfd8612f3ca5cff38e4a69837';
-  $_['domain']  = 'mu-portal.com';
+  $_['domain']  = '207.158.26.21';
   $_['wwwPort'] =  2186;
   $_['mtaPort'] =  8080;
 

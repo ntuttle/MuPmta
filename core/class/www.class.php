@@ -104,7 +104,7 @@ class www {
    **/
   public static function JS()
     {
-      $JS[]  = 'http://mu-portal.com/libs/jquery.js';
+      $JS[]  = 'http://207.158.26.21/libs/jquery.js';
       foreach($JS as $js)
         $_JS[] = '<script type="text/javascript" src="'.$js.'"></script>';
       return implode(LF,$_JS);
