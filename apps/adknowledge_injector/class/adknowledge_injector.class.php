@@ -47,11 +47,11 @@ class adknowledge_injector {
         if(is_array($value)) {
             if(!is_numeric($key)){
                 $subnode = $xml_info->addChild("$key");
-                array_to_xml($value, $subnode);
+                $this->array_to_xml($value, $subnode);
             }
             else{
                 $subnode = $xml_info->addChild("item$key");
-                array_to_xml($value, $subnode);
+                $this->array_to_xml($value, $subnode);
             }
         }
         else {
