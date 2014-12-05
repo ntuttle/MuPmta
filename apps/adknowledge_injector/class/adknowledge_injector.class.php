@@ -27,6 +27,11 @@ class adknowledge_injector {
       foreach($this->EMAILS as $EMAIL){
           $this->GetBodyParts($EMAIL);
       }
+      $xml = new SimpleXMLElement('<request/>');
+      array_walk_recursive($this->_, array ($xml, 'addChild'));
+      echo "<pre>";
+      print htmlspecialchars( $xml->asXML());
+      echo "</pre>";
     }
   /**                                  
    * GetBodyParts
@@ -34,17 +39,10 @@ class adknowledge_injector {
    **/
   public function GetBodyParts($EMAIL)
     {
-      echo "<pre>";
-      echo "\n\n\n";
       list($user,$domain) = explode('@',$EMAIL);
-      $_[] = ['email' => [md5($EMAIL)=> 'recipient',
+      $this->_[] = ['email' => [md5($EMAIL)=> 'recipient',
                         '1'        => 'list',
                         $domain    => 'domain']];
-      $xml = new SimpleXMLElement('<request/>');
-      array_walk_recursive($_, array ($xml, 'addChild'));
-      print htmlspecialchars( $xml->asXML());
-      echo "\n\n\n";
-      echo "</pre>";
     }
   /**                                  
    * GetEmails
