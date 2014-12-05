@@ -40,7 +40,7 @@ class adknowledge_injector {
                       'domain'  => $domain  ];
       $xml = new SimpleXMLElement('<request/>');
       array_walk_recursive($_, array ($xml, 'addChild'));
-      print $xml->asXML();
+      print htmlspecialchars( $xml->asXML());
     }
   /**                                  
    * GetEmails
