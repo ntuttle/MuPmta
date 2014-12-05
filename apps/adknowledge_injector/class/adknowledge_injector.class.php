@@ -13,9 +13,20 @@ class adknowledge_injector {
    **/
   public function SetVariables()       
     {
-      $this->StartAPI();
       $this->GetEmails();
       $this->SendToList();
+      $this->GetIPDetails();
+      $this->StartAPI();
+    }
+  /**
+   * GetIPDetails
+   * -------------------------
+   **/
+  public function GetIPDetails()
+    {
+      $HostID = hostID;
+      $Q = $this->DB->GET('MUP.ipconfig.global_config',['pmta'=>$HostID,'active'=>1]);
+      print_r($Q);
     }
   /**                                  
    * SendToList
@@ -24,12 +35,13 @@ class adknowledge_injector {
   public function SendToList()
     {
 
-      foreach($this->EMAILS as $EMAIL){
-          $this->GetBodyParts($EMAIL);
-      }
+      foreach($this->EMAILS as $EMAIL)
+        $this->GetBodyParts($EMAIL);
       $xml = new SimpleXMLElement('<request/>');
       $this->array_to_xml($this->_,$xml);
       $xml->asXML(__DIR__.'/tmp.xml');
+      $XML = file_get_contents( __DIR__.'/tmp.xml');
+      $this->REQUEST = urlencode( $XML);
     }
   /**                                  
    * GetBodyParts
@@ -40,8 +52,13 @@ class adknowledge_injector {
       list($user,$domain) = explode('@',$EMAIL);
       $this->_[] = ['email' => ['recipient'=>md5($EMAIL),
                                 'list'     =>'1',
-                                'domain'   =>$domain] ];
+                                'domain'   =>$domain,
+                                'test'     =>'1'] ];
     }
+  /**                                  
+   * array_to_xml
+   * -------------------------
+   **/
   public function array_to_xml($info, &$xml_info) {
     foreach($info as $key => $value) {
         if(is_array($value)) {
