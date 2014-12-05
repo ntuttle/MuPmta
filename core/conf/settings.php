@@ -3,7 +3,7 @@
 #---------------------------------------------------
   $SVR = 'sd2'; // force a hostname if running locally
   $_ = stristr(gethostname(),'sd')?[]:['host'=>$SVR];
-  $_['debug']   =  true;
+  $_['debug']   =  false;
   $_['user']    = 'root';
   $_['pass']    = 'ca1ad6dbfd8612f3ca5cff38e4a69837';
   $_['domain']  = '207.158.26.21';
