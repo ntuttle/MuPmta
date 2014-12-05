@@ -38,9 +38,9 @@ class adknowledge_injector {
   public function GetBodyParts($EMAIL)
     {
       list($user,$domain) = explode('@',$EMAIL);
-      $this->_[] = ['email' => [md5($EMAIL)=> 'recipient',
-                        '1'        => 'list',
-                        $domain    => 'domain']];
+      $this->_[] = ['email' => ['recipient'=>md5($EMAIL),
+                                'list'     =>'1',
+                                'domain'   =>$domain] ];
     }
   public function array_to_xml($info, &$xml_info) {
     foreach($info as $key => $value) {
