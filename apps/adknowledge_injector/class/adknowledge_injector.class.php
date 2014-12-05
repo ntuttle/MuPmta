@@ -7,7 +7,7 @@ class adknowledge_injector {
       $this->DB   = $DB;
       $this->SetVariables();
     }
-  /**                                  
+  /**
    * SetVariables
    * -------------------------
    **/
