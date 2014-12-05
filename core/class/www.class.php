@@ -388,7 +388,8 @@ class www {
   public function Frame()
     {
       $HTML[] = '<td width="100%">';
-      $URL = 'http://'.$this->CFG->hostname.'.'.$this->CFG->domain.':'.$this->CFG->mtaPort;
+      //$URL = 'http://'.$this->CFG->hostname.'.'.$this->CFG->domain.':'.$this->CFG->mtaPort;
+      $URL = 'http://'.$_SERVER['SERVER_ADDR'].':'.$this->CFG->mtaPort;
       $WEB = file_get_contents($URL);
       $WEB = str_ireplace('href="','href="'.$URL.'/',$WEB);
       $WEB = str_ireplace('src="logo.gif"','src="'.$URL.'/logo.gif"',$WEB);
