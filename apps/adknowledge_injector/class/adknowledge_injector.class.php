@@ -37,9 +37,9 @@ class adknowledge_injector {
       echo "<pre>";
       echo "\n\n\n";
       list($user,$domain) = explode('@',$EMAIL);
-      $_ = ['email' => [md5($EMAIL)=> 'recipient',
-                       '1'       => 'list',
-                       $domains  => 'domain']];
+      $_[] = ['email' => [md5($EMAIL)=> 'recipient',
+                        '1'        => 'list',
+                        $domain    => 'domain']];
       $xml = new SimpleXMLElement('<request/>');
       array_walk_recursive($_, array ($xml, 'addChild'));
       print htmlspecialchars( $xml->asXML());
