@@ -35,7 +35,7 @@ class adknowledge_injector {
   public function GetBodyParts($EMAIL)
     {
       echo "<pre>";
-      echo "\n\n\n"
+      echo "\n\n\n";
       list($user,$domain) = explode('@',$EMAIL);
       $_ = ['email' => [md5($EMAIL)=> 'recipient',
                        '1'       => 'list',
@@ -43,7 +43,7 @@ class adknowledge_injector {
       $xml = new SimpleXMLElement('<request/>');
       array_walk_recursive($_, array ($xml, 'addChild'));
       print htmlspecialchars( $xml->asXML());
-      echo "\n\n\n"
+      echo "\n\n\n";
       echo "</pre>";
     }
   /**                                  
