@@ -29,9 +29,10 @@ class adknowledge_injector {
       $IP = $Q[array_rand($Q)];
       $RDNS = $IP['rdns'];
       $Q = $this->DB->GET('MUP.ipconfig.target_config',['ip'=>$IP['ip'],'active'=>1]);
-      echo "<pre>";
-      print_r($Q);
-      echo "</pre>";
+      if(empty($Q)){
+        echo 'No Active IPs on this Server';
+        return false;
+      }
     }
   /**                                  
    * SendToList
